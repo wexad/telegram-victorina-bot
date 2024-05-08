@@ -12,5 +12,5 @@ public class Variation extends BaseModel {
 
     private String questionId;
 
-    private String fullVariation;
+    private String text;
 }

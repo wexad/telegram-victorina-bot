@@ -12,5 +12,5 @@ public class Question extends BaseModel {
 
     private String collectionId;
 
-    private String fullQuestion;
+    private String text;
 }
