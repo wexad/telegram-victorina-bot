@@ -15,7 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class BotUser extends BaseModel implements Serializable {
-    private Long id;
+    private Long chatId;
 
     private String firstName;
 

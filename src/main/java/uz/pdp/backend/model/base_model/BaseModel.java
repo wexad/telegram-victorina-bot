@@ -4,16 +4,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Random;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode
 public abstract class BaseModel {
 
-    private Random random = new Random();
-
-    private final Long id;
+    private final String id;
 
     public BaseModel() {
-        this.id = random.nextLong();
+        this.id = UUID.randomUUID().toString();
     }
 }

@@ -53,59 +53,59 @@ public class MessageHandler extends BaseHandler {
             bot.execute(sendMessage);
         }
 
-        if (isFromBot(message)) {
-            switch (botUser.getBotState()) {
-                case MAIN -> {
-                    SendMessage sendMessage = new SendMessage(chat.id(), "Menu : ");
-                    InlineKeyboardButton[][] buttons = new InlineKeyboardButton[1][2];
-
-                    InlineKeyboardButton button1 = new InlineKeyboardButton("My collections");
-                    button1.callbackData("COLLECTIONS");
-
-                    InlineKeyboardButton button2 = new InlineKeyboardButton("Create a new collections");
-                    button2.callbackData("NEW_COLLECTION");
-
-                    buttons[0][0] = button1;
-                    buttons[0][1] = button2;
-
-                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(buttons);
-
-                    sendMessage.replyMarkup(inlineKeyboardMarkup);
-
-                    bot.execute(sendMessage);
-                }
-                case COLLECTION_CREATING -> {
-                    Collection collection = new Collection(text, botUser.getId());
-
-                    collectionService.add(collection);
-
-                    sentText(botUser.getId(), "Please add at least one question with variations : ");
-                }
-                case MY_COLLECTIONS -> {
-                    if (text.equals("Back")) {
-                        botUser.setBotState(BotState.MAIN);
-                    } else {
-                        Collection collection = collectionService.getCollectionByName(text);
-
-                        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName());
-                        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
-
-                        int count = 1;
-                        for (Question question : questionsByCollectionId) {
-                            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
-                            List<Variation> variationsByQuestionId = variationService.getVariationsByQuestionId(question.getId());
-                            int count1 = 1;
-                            for (Variation variation : variationsByQuestionId) {
-                                stringBuilder.append("\t").append("Variation ").append(count1++).append(" : ").append(variation.getAnswer());
-                            }
-                        }
-
-                        sentText(botUser.getId(), stringBuilder.toString());
-                        botUser.setBotState(BotState.MAIN);
-                    }
-                }
-            }
-        }
+//        if (isFromBot(message)) {
+//            switch (botUser.getBotState()) {
+//                case MAIN -> {
+//                    SendMessage sendMessage = new SendMessage(chat.id(), "Menu : ");
+//                    InlineKeyboardButton[][] buttons = new InlineKeyboardButton[1][2];
+//
+//                    InlineKeyboardButton button1 = new InlineKeyboardButton("My collections");
+//                    button1.callbackData("COLLECTIONS");
+//
+//                    InlineKeyboardButton button2 = new InlineKeyboardButton("Create a new collections");
+//                    button2.callbackData("NEW_COLLECTION");
+//
+//                    buttons[0][0] = button1;
+//                    buttons[0][1] = button2;
+//
+//                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(buttons);
+//
+//                    sendMessage.replyMarkup(inlineKeyboardMarkup);
+//
+//                    bot.execute(sendMessage);
+//                }
+//                case COLLECTION_CREATING -> {
+//                    Collection collection = new Collection(text, botUser.getId());
+//
+//                    collectionService.add(collection);
+//
+//                    sentText(botUser.getId(), "Please add at least one question with variations : ");
+//                }
+//                case MY_COLLECTIONS -> {
+//                    if (text.equals("Back")) {
+//                        botUser.setBotState(BotState.MAIN);
+//                    } else {
+//                        Collection collection = collectionService.getCollectionByName(text);
+//
+//                        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName());
+//                        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
+//
+//                        int count = 1;
+//                        for (Question question : questionsByCollectionId) {
+//                            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
+//                            List<Variation> variationsByQuestionId = variationService.getVariationsByQuestionId(question.getId());
+//                            int count1 = 1;
+//                            for (Variation variation : variationsByQuestionId) {
+//                                stringBuilder.append("\t").append("Variation ").append(count1++).append(" : ").append(variation.getAnswer());
+//                            }
+//                        }
+//
+//                        sentText(botUser.getId(), stringBuilder.toString());
+//                        botUser.setBotState(BotState.MAIN);
+//                    }
+//                }
+//            }
+//        }
     }
 
     private void sentText(Long id, String text) {

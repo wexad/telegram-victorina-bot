@@ -6,7 +6,7 @@ import uz.pdp.backend.model.base_model.BaseModel;
 @Data
 public class Group extends BaseModel {
 
-    private Long id;
+    private Long chatId;
 
     private String title;
 

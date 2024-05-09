@@ -30,25 +30,25 @@ public class CallBackQueryHandler extends BaseHandler {
         String data = callbackQuery.data();
 
         BotUser botUser = userService.getOrCreate(user);
-
-        switch (data) {
-            case "COLLECTIONS" -> {
-                botUser.setBotState(BotState.MY_COLLECTIONS);
-                List<Collection> userCollections = collectionService.getUserCollections(botUser);
-
-                if (userCollections.isEmpty()) {
-                    sendText(user.id(), "You don't have any collections of questions! ");
-                    botUser.setBotState(BotState.MAIN);
-                } else {
-                    showCollections(botUser, userCollections);
-                }
-            }
-
-            case "NEW_COLLECTION" -> {
-                botUser.setBotState(BotState.COLLECTION_CREATING);
-                sendText(botUser.getId(), "Please send new collection name : ");
-            }
-        }
+//
+//        switch (data) {
+//            case "COLLECTIONS" -> {
+//                botUser.setBotState(BotState.MY_COLLECTIONS);
+//                List<Collection> userCollections = collectionService.getUserCollections(botUser);
+//
+//                if (userCollections.isEmpty()) {
+//                    sendText(user.id(), "You don't have any collections of questions! ");
+//                    botUser.setBotState(BotState.MAIN);
+//                } else {
+//                    showCollections(botUser, userCollections);
+//                }
+//            }
+//
+//            case "NEW_COLLECTION" -> {
+//                botUser.setBotState(BotState.COLLECTION_CREATING);
+//                sendText(botUser.getId(), "Please send new collection name : ");
+//            }
+//        }
 
     }
 

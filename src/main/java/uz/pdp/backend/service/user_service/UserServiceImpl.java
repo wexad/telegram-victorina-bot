@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
         if (botUser == null) {
             botUser = BotUser.builder()
-                    .id(user.id())
+                    .chatId(user.id())
                     .firstName(user.firstName())
                     .lastName(user.lastName())
                     .userName(user.username())
