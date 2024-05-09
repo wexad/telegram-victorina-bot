@@ -12,5 +12,5 @@ public class Variation extends BaseModel {
     private String answer;
     private Boolean isTrue;
 
-    private String questionId;
+    private Long questionId;
 }
