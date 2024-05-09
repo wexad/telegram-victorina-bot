@@ -8,11 +8,13 @@ import lombok.EqualsAndHashCode;
 import uz.pdp.backend.enums.bot_state.BotState;
 import uz.pdp.backend.model.base_model.BaseModel;
 
+import java.io.Serializable;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @Builder
-public class BotUser extends BaseModel {
+public class BotUser extends BaseModel implements Serializable {
     private Long id;
 
     private String firstName;

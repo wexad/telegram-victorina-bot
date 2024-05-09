@@ -5,5 +5,4 @@ import uz.pdp.backend.service.base_service.BaseService;
 
 public interface CollectionService extends BaseService<Collection> {
 
-    void show(String str);
 }

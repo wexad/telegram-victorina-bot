@@ -20,18 +20,16 @@ public class Main {
     public static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public static void main(String[] args) {
-//        TelegramBot bot = new TelegramBot(BOT_TOKEN);
-//        bot.setUpdatesListener(
-//                list -> {
-//                    for (Update update : list) {
-//                        CompletableFuture.runAsync(() -> BOT_MAIN_HANDLER_THREAD_LOCAL.get().manage(update), EXECUTOR_SERVICE);
-//                    }
-//                    return UpdatesListener.CONFIRMED_UPDATES_ALL;
-//                }, Throwable::printStackTrace
-//        );
+        TelegramBot bot = new TelegramBot(BOT_TOKEN);
+        bot.setUpdatesListener(
+                list -> {
+                    for (Update update : list) {
+                        CompletableFuture.runAsync(() -> BOT_MAIN_HANDLER_THREAD_LOCAL.get().manage(update), EXECUTOR_SERVICE);
+                    }
+                    return UpdatesListener.CONFIRMED_UPDATES_ALL;
+                }, Throwable::printStackTrace
+        );
 
-        CollectionService collectionService = CollectionServiceImpl.getInstance();
 
-        collectionService.show("Hi! ");
     }
 }
