@@ -11,7 +11,6 @@ import uz.pdp.backend.model.base_model.BaseModel;
 @Data
 @AllArgsConstructor
 public class Collection extends BaseModel {
-
     private String name;
     private Long userId;
 

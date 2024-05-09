@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Random;
-import java.util.UUID;
 
 @Data
 @EqualsAndHashCode
@@ -17,5 +16,4 @@ public abstract class BaseModel {
     public BaseModel() {
         this.id = random.nextLong();
     }
-
 }

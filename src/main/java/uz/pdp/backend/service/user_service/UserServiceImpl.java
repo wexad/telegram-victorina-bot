@@ -17,7 +17,6 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl() {
         fileManager = new FileManager<>("src/main/resources/bot_users.txt");
         botUsers = fileManager.load();
-
     }
 
     private static UserService userService;
@@ -39,9 +38,9 @@ public class UserServiceImpl implements UserService {
                     .botState(BotState.MAIN)
                     .build();
 
-//            add(botUser);
+            botUsers.add(botUser);
+            fileManager.write(botUsers);
         }
-
         return botUser;
     }
 

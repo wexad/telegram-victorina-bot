@@ -24,5 +24,4 @@ public class BotUser extends BaseModel implements Serializable {
     private String userName;
 
     private BotState botState;
-
 }

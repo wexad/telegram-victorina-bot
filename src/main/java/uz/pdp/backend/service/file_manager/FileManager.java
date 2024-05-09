@@ -3,6 +3,7 @@ package uz.pdp.backend.service.file_manager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import uz.pdp.backend.model.bot_user.BotUser;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -13,40 +14,33 @@ import java.util.List;
 
 public class FileManager<M> {
 
-    private final String FIlE_PATH;
+    private final String FILE_PATH;
     private final Gson GSON;
+    private final Type TYPE;
 
     public FileManager(String filePath) {
-        this.FIlE_PATH = filePath;
+        this.FILE_PATH = filePath;
         this.GSON = (new GsonBuilder()).setDateFormat("dd/MM/yyyy").setPrettyPrinting().create();
+        this.TYPE = new TypeToken<List<M>>(){}.getType();
     }
 
     public void write(List<M> list) {
-        String json = this.GSON.toJson(list);
-
         try {
-            Files.writeString(Path.of(this.FIlE_PATH), json);
+            String json = GSON.toJson(list,TYPE);
+            Files.writeString(Path.of(this.FILE_PATH), json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public List<M> load() {
-        List<M> result = new ArrayList<>();
-
         try {
-            String jsonModel = Files.readString(Path.of(this.FIlE_PATH));
-            Type type = (new TypeToken<List<M>>() {
-            }).getType();
-            List<M> list = (List<M>) this.GSON.fromJson(jsonModel, type);
-            if (list == null) {
-                list = new ArrayList<>();
-            }
-
-            return (List<M>) list;
+            String json = Files.readString(Path.of(this.FILE_PATH));
+            ArrayList<M> list = GSON.fromJson(json, TYPE);
+            return list != null ? list : new ArrayList<>();
         } catch (IOException e) {
             System.out.println("Something in loading data wrong! ");
         }
-        return result;
+        return new ArrayList<>();
     }
 }
