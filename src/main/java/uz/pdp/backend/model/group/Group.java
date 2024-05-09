@@ -7,7 +7,7 @@ public class Group {
 
     private Long id;
 
-    private String tittle;
+    private String title;
 
     private String userName;
 }

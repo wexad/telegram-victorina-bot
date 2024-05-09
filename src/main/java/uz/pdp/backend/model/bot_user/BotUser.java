@@ -4,7 +4,7 @@ package uz.pdp.backend.model.bot_user;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uz.pdp.backend.model.enums.bot_state.BotState;
+import uz.pdp.backend.enums.bot_state.BotState;
 
 @Data
 @AllArgsConstructor

@@ -13,5 +13,6 @@ import uz.pdp.backend.model.base_model.BaseModel;
 public class Collection extends BaseModel {
 
     private String name;
+    private Long userId;
 
 }

@@ -1,4 +1,4 @@
-package uz.pdp.backend.model.enums.bot_state;
+package uz.pdp.backend.enums.bot_state;
 
 public enum BotState {
     MAIN,

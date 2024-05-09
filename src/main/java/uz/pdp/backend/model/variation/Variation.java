@@ -9,8 +9,8 @@ import uz.pdp.backend.model.base_model.BaseModel;
 @Data
 @AllArgsConstructor
 public class Variation extends BaseModel {
+    private String answer;
+    private Boolean isTrue;
 
     private String questionId;
-
-    private String text;
 }

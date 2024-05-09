@@ -12,8 +12,8 @@ public class Game extends BaseModel {
 
     private String collectionId;
 
-    private int timeForQuiz;
+    private Integer timeForQuiz;
 
-    private boolean isActive;
+    private Boolean isActive;
 
 }
