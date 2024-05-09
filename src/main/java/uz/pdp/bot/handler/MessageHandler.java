@@ -27,26 +27,6 @@ public class MessageHandler extends BaseHandler {
 
             SendMessage sendMessage = new SendMessage(chat.id(), "Hello! ");
             bot.execute(sendMessage);
-
-            Question question = new Question(null, "Hello? ");
-            Variation variation1 = new Variation(question.getId(), "Hello");
-            Variation variation2 = new Variation(question.getId(), "Hi");
-            Variation variation3 = new Variation(question.getId(), "Ola");
-            Variation variation4 = new Variation(question.getId(), "Gracia");
-
-
-            SendPoll sendPoll = new SendPoll(chat.id(), question.getText(), getOptions(variation1, variation2, variation3, variation4));
-
-            bot.execute(sendPoll);
         }
-    }
-
-    private String[] getOptions(Variation... variations) {
-        String[] options = new String[variations.length];
-        for (int i = 0; i < variations.length; i++) {
-            options[i] = variations[i].getText();
-        }
-
-        return options;
     }
 }
