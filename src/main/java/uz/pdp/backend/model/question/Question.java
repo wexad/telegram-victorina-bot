@@ -10,7 +10,7 @@ import uz.pdp.backend.model.base_model.BaseModel;
 @AllArgsConstructor
 public class Question extends BaseModel {
 
-    private Long collectionId;
+    private String collectionId;
 
     private String text;
 }

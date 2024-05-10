@@ -21,13 +21,13 @@ public class FileManager<M> {
     public FileManager(String filePath) {
         this.FILE_PATH = filePath;
         this.GSON = new GsonBuilder().setDateFormat("dd/MM/yyyy").setPrettyPrinting().create();
-        this.TYPE = new TypeToken<List<M>>(){}.getType();
+        this.TYPE = new TypeToken<List<M>>() {
+        }.getType();
     }
 
     public void write(List<M> list) {
         try {
-            System.out.println(GSON.toJson(list,TYPE));
-            String json = GSON.toJson(list,TYPE);
+            String json = GSON.toJson(list, TYPE);
             Files.writeString(Path.of(this.FILE_PATH), json);
         } catch (IOException e) {
             throw new RuntimeException(e);

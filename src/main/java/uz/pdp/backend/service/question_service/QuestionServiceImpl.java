@@ -24,7 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> getQuestionsByCollectionId(Long id) {
+    public List<Question> getQuestionsByCollectionId(String id) {
         List<Question> questionList = new ArrayList<>();
 
         for (Question question : questions) {

@@ -25,7 +25,7 @@ public class VariationServiceImpl implements VariationService {
     }
 
     @Override
-    public List<Variation> getVariationsByQuestionId(Long id) {
+    public List<Variation> getVariationsByQuestionId(String id) {
         List<Variation> variationList = new ArrayList<>();
 
         for (Variation variation : variations) {

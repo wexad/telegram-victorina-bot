@@ -30,7 +30,7 @@ public class CollectionServiceImpl implements CollectionService {
         List<Collection> userCollections = new ArrayList<>();
 
         for (Collection collection : collections) {
-            if (Objects.equals(collection.getUserId(), botUser.getId())) {
+            if (Objects.equals(collection.getUserId(), botUser.getChatId())) {
                 userCollections.add(collection);
             }
         }

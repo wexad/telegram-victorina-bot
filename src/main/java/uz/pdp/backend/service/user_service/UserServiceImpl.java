@@ -39,7 +39,6 @@ public class UserServiceImpl implements UserService {
                     .build();
 
             botUsers.add(botUser);
-            fileManager.write(botUsers);
         }
         return botUser;
     }
@@ -47,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BotUser getUserById(Long id) {
         for (BotUser botUser : botUsers) {
-            if (Objects.equals(botUser.getId(), id)) {
+            if (Objects.equals(botUser.getChatId(), id)) {
                 return botUser;
             }
         }
