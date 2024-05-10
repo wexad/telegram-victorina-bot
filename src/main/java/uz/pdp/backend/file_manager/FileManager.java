@@ -1,4 +1,4 @@
-package uz.pdp.backend.service.file_manager;
+package uz.pdp.backend.file_manager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

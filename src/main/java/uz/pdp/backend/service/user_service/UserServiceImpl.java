@@ -1,9 +1,9 @@
 package uz.pdp.backend.service.user_service;
 
 import com.pengrad.telegrambot.model.User;
-import uz.pdp.backend.enums.bot_state.BotState;
 import uz.pdp.backend.model.bot_user.BotUser;
-import uz.pdp.backend.service.file_manager.FileManager;
+import uz.pdp.backend.file_manager.FileManager;
+import uz.pdp.bot.enums.bot_state.child.MainState;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,9 +35,10 @@ public class UserServiceImpl implements UserService {
                     .firstName(user.firstName())
                     .lastName(user.lastName())
                     .userName(user.username())
+                    .baseState(MainState.MAIN_MENU.name())
                     .build();
 
-            botUsers.add(botUser);
+            add(botUser);
         }
         return botUser;
     }
@@ -66,7 +67,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void add(BotUser botUser) {
         botUsers.add(botUser);
-
         fileManager.write(botUsers);
     }
 }

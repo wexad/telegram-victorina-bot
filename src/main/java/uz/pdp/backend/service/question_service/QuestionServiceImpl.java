@@ -1,7 +1,7 @@
 package uz.pdp.backend.service.question_service;
 
 import uz.pdp.backend.model.question.Question;
-import uz.pdp.backend.service.file_manager.FileManager;
+import uz.pdp.backend.file_manager.FileManager;
 
 import java.util.ArrayList;
 import java.util.List;

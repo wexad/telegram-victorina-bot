@@ -5,9 +5,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import uz.pdp.backend.enums.bot_state.BotState;
+import uz.pdp.bot.enums.bot_state.child.MainState;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.question.Question;
@@ -21,7 +20,6 @@ import uz.pdp.backend.service.user_service.UserServiceImpl;
 import uz.pdp.backend.service.variation_service.VariationService;
 import uz.pdp.backend.service.variation_service.VariationServiceImpl;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CallBackQueryHandler extends BaseHandler {
@@ -43,37 +41,37 @@ public class CallBackQueryHandler extends BaseHandler {
 
         BotUser botUser = userService.getOrCreate(user);
 
-        switch (data) {
-            case "COLLECTIONS" -> {
-                botUser.setBotState(BotState.MY_COLLECTIONS);
-                System.out.println(botUser.getBotState());
-                List<Collection> userCollections = collectionService.getUserCollections(botUser);
-
-                if (userCollections.isEmpty()) {
-                    sendText(user.id(), "You don't have any collections of questions! ");
-                    botUser.setBotState(BotState.MAIN);
-                } else {
-                    showCollections(botUser, userCollections);
-                }
-            }
-
-            case "NEW_COLLECTION" -> {
-                botUser.setBotState(BotState.COLLECTION_CREATING);
-                sendText(botUser.getChatId(), "Please send new collection name : ");
-                System.out.println(botUser.getBotState());
-            }
-        }
-
-        if (botUser.getBotState().equals(BotState.MY_COLLECTIONS)) {
-            if (data.equals("Back")) {
-
-                botUser.setBotState(BotState.MAIN);
-                System.out.println(botUser.getBotState());
-            } else {
-                Collection collection = collectionService.getCollectionByName(data);
-                showCollection(collection, botUser);
-            }
-        }
+//        switch (data) {
+//            case "COLLECTIONS" -> {
+//                botUser.setBotState(MyCollections.MY_COLLECTIONS);
+//                System.out.println(botUser.getBotState());
+//                List<Collection> userCollections = collectionService.getUserCollections(botUser);
+//
+//                if (userCollections.isEmpty()) {
+//                    sendText(user.id(), "You don't have any collections of questions! ");
+//                    botUser.setBotState(MainState.MAIN);
+//                } else {
+//                    showCollections(botUser, userCollections);
+//                }
+//            }
+//
+//            case "NEW_COLLECTION" -> {
+//                botUser.setBotState(MainState.COLLECTION_CREATING);
+//                sendText(botUser.getChatId(), "Please send new collection name : ");
+//                System.out.println(botUser.getBotState());
+//            }
+//        }
+//
+//        if (botUser.getBotState().equals(MainState.MY_COLLECTIONS)) {
+//            if (data.equals("Back")) {
+//
+//                botUser.setBotState(MainState.MAIN);
+//                System.out.println(botUser.getBotState());
+//            } else {
+//                Collection collection = collectionService.getCollectionByName(data);
+//                showCollection(collection, botUser);
+//            }
+//        }
 
     }
 
@@ -92,7 +90,7 @@ public class CallBackQueryHandler extends BaseHandler {
         }
 
         sendText(botUser.getChatId(), stringBuilder.toString());
-        botUser.setBotState(BotState.MAIN);
+        //botUser.setBotState(MainState.MAIN);
     }
 
     private void showCollections(BotUser botUser, List<Collection> userCollections) {

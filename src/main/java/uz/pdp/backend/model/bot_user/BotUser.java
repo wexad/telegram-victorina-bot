@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import uz.pdp.backend.enums.bot_state.BotState;
 import uz.pdp.backend.model.base_model.BaseModel;
 
 import java.io.Serializable;
@@ -23,5 +22,6 @@ public class BotUser extends BaseModel implements Serializable {
 
     private String userName;
 
-    private BotState botState;
+    private String baseState;
+    private String state;
 }

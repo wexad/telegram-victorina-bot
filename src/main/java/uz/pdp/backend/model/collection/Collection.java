@@ -14,5 +14,4 @@ public class Collection extends BaseModel {
     private String name;
     private Long userId;
     private Boolean isFinished;
-
 }

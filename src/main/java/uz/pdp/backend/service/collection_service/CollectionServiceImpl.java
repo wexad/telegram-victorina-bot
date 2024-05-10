@@ -2,7 +2,7 @@ package uz.pdp.backend.service.collection_service;
 
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
-import uz.pdp.backend.service.file_manager.FileManager;
+import uz.pdp.backend.file_manager.FileManager;
 
 import java.util.ArrayList;
 import java.util.List;
