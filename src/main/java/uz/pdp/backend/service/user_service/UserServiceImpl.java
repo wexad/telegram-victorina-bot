@@ -35,7 +35,6 @@ public class UserServiceImpl implements UserService {
                     .firstName(user.firstName())
                     .lastName(user.lastName())
                     .userName(user.username())
-                    .botState(BotState.MAIN)
                     .build();
 
             botUsers.add(botUser);

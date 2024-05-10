@@ -45,66 +45,62 @@ public class MessageHandler extends BaseHandler {
 
 
         if (Objects.equals(text, "/start")) {
+            botUser.setBotState(BotState.MAIN);
             SendMessage sendMessage = new SendMessage(chat.id(), "Hello! " + botUser.getUserName());
             bot.execute(sendMessage);
         }
 
         if (isFromBot(message)) {
-            switch (botUser.getBotState()) {
-                case MAIN -> {
-                    SendMessage sendMessage = new SendMessage(chat.id(), "Menu : ");
-                    InlineKeyboardButton[][] buttons = new InlineKeyboardButton[1][2];
+            if (Objects.requireNonNull(botUser.getBotState()) == BotState.MAIN) {
+                SendMessage sendMessage = new SendMessage(chat.id(), "Menu : ");
+                InlineKeyboardButton[][] buttons = new InlineKeyboardButton[1][2];
 
-                    InlineKeyboardButton button1 = new InlineKeyboardButton("My collections");
-                    button1.callbackData("COLLECTIONS");
+                InlineKeyboardButton button1 = new InlineKeyboardButton("My collections");
+                button1.callbackData("COLLECTIONS");
 
-                    InlineKeyboardButton button2 = new InlineKeyboardButton("Create a new collections");
-                    button2.callbackData("NEW_COLLECTION");
+                InlineKeyboardButton button2 = new InlineKeyboardButton("Create a new collections");
+                button2.callbackData("NEW_COLLECTION");
 
-                    buttons[0][0] = button1;
-                    buttons[0][1] = button2;
+                buttons[0][0] = button1;
+                buttons[0][1] = button2;
 
-                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(buttons);
+                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(buttons);
 
-                    sendMessage.replyMarkup(inlineKeyboardMarkup);
+                sendMessage.replyMarkup(inlineKeyboardMarkup);
 
-                    bot.execute(sendMessage);
-                }
-                case COLLECTION_CREATING -> {
-                    Collection collection = new Collection(text, botUser.getChatId(), false);
+                bot.execute(sendMessage);
+            } else if (botUser.getBotState() == BotState.COLLECTION_CREATING) {
+                System.out.println("Enter");
+                Collection collection = new Collection(text, botUser.getChatId(), false);
 
-                    collectionService.add(collection);
+                collectionService.add(collection);
 
-                    sendText(botUser.getChatId(), "Please add at least one question with variations : ");
+                sendText(botUser.getChatId(), "Please add at least one question with variations : ");
 
-                    botUser.setBotState(BotState.QUESTION_ADD);
+                botUser.setBotState(BotState.QUESTION_ADD);
 
-                    InlineKeyboardButton button1 = new InlineKeyboardButton("Add question");
-                    button1.callbackData();
+                InlineKeyboardButton button1 = new InlineKeyboardButton("Add question");
+                button1.callbackData();
 
-                    InlineKeyboardButton button2 = new InlineKeyboardButton("Finish");
-                    button2.callbackData();
+                InlineKeyboardButton button2 = new InlineKeyboardButton("Finish");
+                button2.callbackData();
 
-                    InlineKeyboardButton button3 = new InlineKeyboardButton("Cancel");
-                    button3.callbackData();
+                InlineKeyboardButton button3 = new InlineKeyboardButton("Cancel");
+                button3.callbackData();
 
-                    InlineKeyboardButton[][] buttons = new InlineKeyboardButton[2][2];
+                InlineKeyboardButton[][] buttons = new InlineKeyboardButton[2][2];
 
-                    buttons[0][0] = button1;
-                    buttons[0][1] = button2;
-                    buttons[1][0] = button3;
+                buttons[0][0] = button1;
+                buttons[0][1] = button2;
+                buttons[1][0] = button3;
 
-                    InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(buttons);
+                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(buttons);
 
-                    SendMessage sendMessage = new SendMessage(botUser.getChatId(), "Choose : ");
+                SendMessage sendMessage = new SendMessage(botUser.getChatId(), "Choose : ");
 
-                    sendMessage.replyMarkup(inlineKeyboardMarkup);
+                sendMessage.replyMarkup(inlineKeyboardMarkup);
 
-                    bot.execute(sendMessage);
-                }
-                case MY_COLLECTIONS -> {
-
-                }
+                bot.execute(sendMessage);
             }
         }
     }
