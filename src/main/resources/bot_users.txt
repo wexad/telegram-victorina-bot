@@ -1,0 +1,10 @@
+[
+  {
+    "chatId": 5686300407,
+    "firstName": "Sherzod",
+    "lastName": "Jamshidovich",
+    "userName": "wexad",
+    "baseState": "MAIN_MENU",
+    "id": "887d22bc-1063-48ec-aebc-62fb340f1c19"
+  }
+]
