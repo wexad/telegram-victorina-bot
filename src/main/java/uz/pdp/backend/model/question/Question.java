@@ -13,4 +13,6 @@ public class Question extends BaseModel {
     private String collectionId;
 
     private String text;
+
+    private Boolean isFilled;
 }

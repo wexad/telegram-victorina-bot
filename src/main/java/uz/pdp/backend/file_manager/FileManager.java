@@ -16,29 +16,28 @@ public class FileManager<M> {
 
     private final String FILE_PATH;
     private final Gson GSON;
-    private final Type TYPE;
 
     public FileManager(String filePath) {
         this.FILE_PATH = filePath;
         this.GSON = new GsonBuilder().setDateFormat("dd/MM/yyyy").setPrettyPrinting().create();
-        this.TYPE = new TypeToken<List<M>>() {
-        }.getType();
+
     }
 
-    public void write(List<M> list) {
+    public void write(List<M> list, Class<M> c) {
         try {
-            String json = GSON.toJson(list, TYPE);
+            String json = GSON.toJson(list, c);
             Files.writeString(Path.of(this.FILE_PATH), json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<M> load() {
+    public List<M> load(Class<M> c) {
+        Type type = TypeToken.getParameterized(List.class, c).getType();
         List<M> result = new ArrayList<>();
         try {
             String json = Files.readString(Path.of(this.FILE_PATH));
-            ArrayList<M> list = GSON.fromJson(json, TYPE);
+            ArrayList<M> list = GSON.fromJson(json, type);
             if (list != null) {
                 for (M m : list) {
                     if (m != null) {

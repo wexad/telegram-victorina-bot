@@ -10,13 +10,12 @@ import java.util.Objects;
 
 public class UserServiceImpl implements UserService {
 
-    private final List<BotUser> botUsers;
 
     private final FileManager<BotUser> fileManager;
 
     public UserServiceImpl() {
         fileManager = new FileManager<>("src/main/resources/bot_users.txt");
-        botUsers = fileManager.load();
+
     }
 
     private static UserService userService;
@@ -45,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BotUser getUserById(Long id) {
+        List<BotUser> botUsers = fileManager.load(BotUser.class);
         for (BotUser botUser : botUsers) {
             if (Objects.equals(botUser.getChatId(), id)) {
                 return botUser;
@@ -55,18 +55,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(BotUser botUser) {
+        List<BotUser> botUsers = fileManager.load(BotUser.class);
         for (int i = 0; i < botUsers.size(); i++) {
             if (botUsers.get(i).equals(botUser)) {
                 botUsers.set(i, botUser);
             }
         }
 
-//        fileManager.write(botUsers);
+        fileManager.write(botUsers, BotUser.class);
     }
 
     @Override
     public void add(BotUser botUser) {
+        List<BotUser> botUsers = fileManager.load(BotUser.class);
         botUsers.add(botUser);
-//        fileManager.write(botUsers);
+        fileManager.write(botUsers, BotUser.class);
     }
 }

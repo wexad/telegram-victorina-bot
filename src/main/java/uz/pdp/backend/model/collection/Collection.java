@@ -12,6 +12,6 @@ import uz.pdp.backend.model.base_model.BaseModel;
 @AllArgsConstructor
 public class Collection extends BaseModel {
     private String name;
-    private Long userId;
+    private String userName;
     private Boolean isFinished;
 }

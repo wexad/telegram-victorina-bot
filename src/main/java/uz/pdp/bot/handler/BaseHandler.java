@@ -3,7 +3,6 @@ package uz.pdp.bot.handler;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.request.DeleteMessage;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.game_service.GameService;
@@ -11,7 +10,7 @@ import uz.pdp.backend.service.group_service.GroupService;
 import uz.pdp.backend.service.question_service.QuestionService;
 import uz.pdp.backend.service.result_service.ResultService;
 import uz.pdp.backend.service.user_service.UserService;
-import uz.pdp.backend.service.variation_service.VariationService;
+import uz.pdp.backend.service.answer_service.AnswerService;
 import uz.pdp.bean.BeanController;
 import uz.pdp.bot.Main;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
@@ -26,7 +25,7 @@ public abstract class BaseHandler {
     protected GroupService groupService;
     protected QuestionService questionService;
     protected ResultService resultService;
-    protected VariationService variationService;
+    protected AnswerService variationService;
 
     public BaseHandler() {
         this.bot = new TelegramBot(Main.BOT_TOKEN);

@@ -10,9 +10,9 @@ public enum CreateCollectionState implements State {
     ENTER_ANSWER(ENTER_QUESTION),
     CREATE_OR_ANOTHER(ENTER_ANSWER);
 
-    public CreateCollectionState pervState;
+    public final CreateCollectionState back;
 
     CreateCollectionState(CreateCollectionState pervState) {
-        this.pervState = pervState;
+        this.back = pervState;
     }
 }

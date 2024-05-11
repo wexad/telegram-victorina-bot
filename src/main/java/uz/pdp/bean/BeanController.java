@@ -6,7 +6,7 @@ import uz.pdp.backend.service.group_service.GroupServiceImpl;
 import uz.pdp.backend.service.question_service.QuestionServiceImpl;
 import uz.pdp.backend.service.result_service.ResultServiceImpl;
 import uz.pdp.backend.service.user_service.UserServiceImpl;
-import uz.pdp.backend.service.variation_service.VariationServiceImpl;
+import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
 
 public interface BeanController {
     ThreadLocal<UserServiceImpl> USER_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(UserServiceImpl::new);
@@ -15,5 +15,5 @@ public interface BeanController {
     ThreadLocal<GroupServiceImpl> GROUP_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(GroupServiceImpl::new);
     ThreadLocal<QuestionServiceImpl> QUESTION_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(QuestionServiceImpl::new);
     ThreadLocal<ResultServiceImpl> RESULT_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(ResultServiceImpl::new);
-    ThreadLocal<VariationServiceImpl> VARIATION_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(VariationServiceImpl::new);
+    ThreadLocal<AnswerServiceImpl> VARIATION_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(AnswerServiceImpl::new);
 }

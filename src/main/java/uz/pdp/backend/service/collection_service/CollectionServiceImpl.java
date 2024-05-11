@@ -1,8 +1,8 @@
 package uz.pdp.backend.service.collection_service;
 
+import uz.pdp.backend.file_manager.FileManager;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
-import uz.pdp.backend.file_manager.FileManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,19 +18,18 @@ public class CollectionServiceImpl implements CollectionService {
 
     private final FileManager<Collection> fileManager;
 
-    private final List<Collection> collections;
-
     public CollectionServiceImpl() {
         fileManager = new FileManager<>("src/main/resources/collections.txt");
-        this.collections = fileManager.load();
     }
 
     @Override
     public List<Collection> getUserCollections(BotUser botUser) {
+        List<Collection> collections = fileManager.load(Collection.class);
+
         List<Collection> userCollections = new ArrayList<>();
 
         for (Collection collection : collections) {
-            if (Objects.equals(collection.getUserId(), botUser.getChatId())) {
+            if (Objects.equals(collection.getUserName(), botUser.getUserName())) {
                 userCollections.add(collection);
             }
         }
@@ -40,6 +39,7 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public Collection getCollectionByName(String name) {
+        List<Collection> collections = fileManager.load(Collection.class);
         for (Collection collection : collections) {
             if (Objects.equals(collection.getName(), name)) {
                 return collection;
@@ -50,6 +50,21 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public void add(Collection collection) {
+        List<Collection> collections = fileManager.load(Collection.class);
         collections.add(collection);
+
+        fileManager.write(collections, Collection.class);
+    }
+
+    @Override
+    public Collection getLastCollectionUser(BotUser myUser) {
+        List<Collection> collections = fileManager.load(Collection.class);
+
+        for (Collection collection : collections) {
+            if (collection.getUserName().equals(myUser.getUserName()) && !collection.getIsFinished()) {
+                return collection;
+            }
+        }
+        return null;
     }
 }

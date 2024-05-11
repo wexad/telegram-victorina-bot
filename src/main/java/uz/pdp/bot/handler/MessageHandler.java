@@ -7,16 +7,22 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import uz.pdp.backend.model.bot_user.BotUser;
+import org.jetbrains.annotations.NotNull;
+import uz.pdp.backend.model.collection.Collection;
+import uz.pdp.backend.model.question.Question;
+import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.collection_service.CollectionServiceImpl;
 import uz.pdp.backend.service.question_service.QuestionService;
 import uz.pdp.backend.service.question_service.QuestionServiceImpl;
 import uz.pdp.backend.service.user_service.UserService;
 import uz.pdp.backend.service.user_service.UserServiceImpl;
-import uz.pdp.backend.service.variation_service.VariationService;
-import uz.pdp.backend.service.variation_service.VariationServiceImpl;
+import uz.pdp.backend.service.answer_service.AnswerService;
+import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
+import uz.pdp.bot.enums.bot_state.base.BaseState;
+import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 
 import java.util.Objects;
 
@@ -28,7 +34,7 @@ public class MessageHandler extends BaseHandler {
 
     private final QuestionService questionService = QuestionServiceImpl.getInstance();
 
-    private final VariationService variationService = VariationServiceImpl.getInstance();
+    private final AnswerService variationService = AnswerServiceImpl.getInstance();
 
     @Override
     public void handle(Update update) {
@@ -46,13 +52,90 @@ public class MessageHandler extends BaseHandler {
             }
 
             if (isFromBot(message)) {
+                System.out.println(myUser.getBaseState());
                 switch (myUser.getBaseState()) {
                     case "MAIN_STATE" -> showMainMenu(chat);
+
+                    case "CREATE_COLLECTION" -> {
+                        if (Objects.equals(myUser.getSubState(), "ENTER_NAME_OF_COLLECTION")) {
+                            Collection collection = new Collection(text, myUser.getUserName(), false);
+
+                            collectionService.add(collection);
+
+                            myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
+
+                            sendText(myUser.getChatId(), "Enter question please : ");
+                        } else if (Objects.equals(myUser.getSubState(), "ENTER_QUESTION")) {
+
+                            Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+                            Question question = new Question(lastCollectionUser.getId(), text, false);
+
+                            questionService.add(question);
+                            myUser.setSubState(CreateCollectionState.ENTER_ANSWER.toString());
+
+                            String mes = """
+                                    Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
+                                    For example :
+                                    true
+                                    false
+                                    false
+                                    false
+                                    """;
+
+                            sendText(myUser.getChatId(), mes);
+                        } else if (Objects.equals(myUser.getSubState(), CreateCollectionState.ENTER_ANSWER.toString())) {
+                            Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+
+                            String[] variations = text.split("\n");
+
+                            if (variations.length >= 2) {
+                                Question nonFilledQuestionUser = questionService.getNonFilledQuestionUser(lastCollectionUser);
+
+                                Answer variation = new Answer(variations[0], true, nonFilledQuestionUser.getId());
+                                variationService.add(variation);
+                                for (int i = 1; i < variations.length; i++) {
+                                    Answer var = new Answer(variations[i], false, nonFilledQuestionUser.getId());
+                                    variationService.add(var);
+                                }
+
+                                nonFilledQuestionUser.setIsFilled(true);
+                                SendMessage addOrFinish = getSendMessage();
+
+                                bot.execute(addOrFinish);
+
+                                myUser.setSubState(CreateCollectionState.CREATE_OR_ANOTHER.toString());
+                            } else {
+                                sendText(myUser.getChatId(), "Please send two or more answers to this question! ");
+                            }
+                        } else if (Objects.equals(myUser.getSubState(), "CREATE_OR_ANOTHER")) {
+                            if (text.equals("Add question")) {
+                                myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
+                            } else if (text.equals("Finish creating collection")) {
+                                Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+
+                                lastCollectionUser.setIsFinished(true);
+                                myUser.setBaseState(BaseState.MAIN_STATE.toString());
+                                myUser.setSubState(null);
+                            }
+                        }
+                    }
                 }
             }
         }
 
 
+    }
+
+    private @NotNull SendMessage getSendMessage() {
+        SendMessage addOrFinish = new SendMessage(myUser.getChatId(), "Choose : ");
+        KeyboardButton keyboardButton1 = new KeyboardButton("Add question");
+
+        KeyboardButton keyboardButton2 = new KeyboardButton("Finish creating collection");
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardButton1, keyboardButton2);
+
+        addOrFinish.replyMarkup(replyKeyboardMarkup);
+        return addOrFinish;
     }
 
     private void showMainMenu(Chat chat) {
