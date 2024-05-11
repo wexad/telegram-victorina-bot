@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.PollAnswer;
 import com.pengrad.telegrambot.model.Update;
+import uz.pdp.bean.BeanController;
 
 import java.util.Objects;
 
@@ -16,18 +17,12 @@ public class BotManager {
 
         PollAnswer pollAnswer = update.pollAnswer();
 
-
         if (Objects.nonNull(message)) {
-            MessageHandler messageHandler = new MessageHandler();
-            messageHandler.handle(update);
-
+            BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
         } else if (Objects.nonNull(callbackQuery)) {
-            CallBackQueryHandler callBackQueryHandler = new CallBackQueryHandler();
-            callBackQueryHandler.handle(update);
-
+            BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().handle(update);
         } else if (Objects.nonNull(pollAnswer)) {
-            PollAnswerHandler pollAnswerHandler = new PollAnswerHandler();
-            pollAnswerHandler.handle(update);
+            BeanController.POLL_ANSWER_HANDLER_THREAD_LOCAL.get().handle(update);
         }
     }
 }

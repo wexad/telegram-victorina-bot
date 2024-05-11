@@ -23,16 +23,17 @@ public class FileManager<M> {
 
     }
 
-    public void write(List<M> list, Class<M> c) {
+    public synchronized void write(List<M> list, Class<M> c) {
         try {
-            String json = GSON.toJson(list, c);
+            Type type = TypeToken.getParameterized(List.class, c).getType();
+            String json = GSON.toJson(list, type);
             Files.writeString(Path.of(this.FILE_PATH), json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<M> load(Class<M> c) {
+    public synchronized List<M> load(Class<M> c) {
         Type type = TypeToken.getParameterized(List.class, c).getType();
         List<M> result = new ArrayList<>();
         try {

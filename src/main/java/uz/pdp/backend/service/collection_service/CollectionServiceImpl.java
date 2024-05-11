@@ -52,19 +52,28 @@ public class CollectionServiceImpl implements CollectionService {
     public void add(Collection collection) {
         List<Collection> collections = fileManager.load(Collection.class);
         collections.add(collection);
-
         fileManager.write(collections, Collection.class);
     }
 
     @Override
     public Collection getLastCollectionUser(BotUser myUser) {
         List<Collection> collections = fileManager.load(Collection.class);
-
         for (Collection collection : collections) {
             if (collection.getUserName().equals(myUser.getUserName()) && !collection.getIsFinished()) {
                 return collection;
             }
         }
         return null;
+    }
+
+    @Override
+    public void update(Collection collection) {
+        List<Collection> collections = fileManager.load(Collection.class);
+        for (int i = 0; i < collections.size(); i++) {
+            if (Objects.equals(collection.getId(),collections.get(i).getId())) {
+                collections.set(i, collection);
+            }
+        }
+        fileManager.write(collections, Collection.class);
     }
 }

@@ -7,6 +7,10 @@ import uz.pdp.backend.service.question_service.QuestionServiceImpl;
 import uz.pdp.backend.service.result_service.ResultServiceImpl;
 import uz.pdp.backend.service.user_service.UserServiceImpl;
 import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
+import uz.pdp.bot.handler.BaseHandler;
+import uz.pdp.bot.handler.CallBackQueryHandler;
+import uz.pdp.bot.handler.MessageHandler;
+import uz.pdp.bot.handler.PollAnswerHandler;
 
 public interface BeanController {
     ThreadLocal<UserServiceImpl> USER_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(UserServiceImpl::new);
@@ -16,4 +20,7 @@ public interface BeanController {
     ThreadLocal<QuestionServiceImpl> QUESTION_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(QuestionServiceImpl::new);
     ThreadLocal<ResultServiceImpl> RESULT_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(ResultServiceImpl::new);
     ThreadLocal<AnswerServiceImpl> VARIATION_SERVICE_THREAD_LOCAL = ThreadLocal.withInitial(AnswerServiceImpl::new);
+    ThreadLocal<MessageHandler> MESSAGE_HANDLER_THREAD_LOCAL = ThreadLocal.withInitial(MessageHandler::new);
+    ThreadLocal<CallBackQueryHandler> CALL_BACK_QUERY_HANDLER_THREAD_LOCAL  = ThreadLocal.withInitial(CallBackQueryHandler::new);
+    ThreadLocal<PollAnswerHandler> POLL_ANSWER_HANDLER_THREAD_LOCAL = ThreadLocal.withInitial(PollAnswerHandler::new);
 }

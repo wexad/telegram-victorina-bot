@@ -11,5 +11,5 @@ public interface QuestionService extends BaseService<Question> {
 
     void add(Question question);
 
-    Question getNonFilledQuestionUser(Collection lastCollectionUser);
+    Question getNonFilledQuestion(Collection lastCollectionUser);
 }

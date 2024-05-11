@@ -3,6 +3,7 @@ package uz.pdp.bot.handler;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
+import com.pengrad.telegrambot.request.SendMessage;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.game_service.GameService;
@@ -47,11 +48,16 @@ public abstract class BaseHandler {
                     .chatId(from.id())
                     .userName(from.username())
                     .baseState(BaseState.MAIN_STATE.name())
+                    .subState(null)
                     .firstName(from.firstName())
                     .lastName(from.lastName())
                     .build();
             userService.add(myUser);
         }
         return myUser;
+    }
+    protected void sendText(Long id, String text) {
+        SendMessage sendMessage = new SendMessage(id, text);
+        bot.execute(sendMessage);
     }
 }

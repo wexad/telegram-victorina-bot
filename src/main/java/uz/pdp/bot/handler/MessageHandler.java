@@ -63,7 +63,7 @@ public class MessageHandler extends BaseHandler {
                             collectionService.add(collection);
 
                             myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
-
+                            userService.update(myUser);
                             sendText(myUser.getChatId(), "Enter question please : ");
                         } else if (Objects.equals(myUser.getSubState(), "ENTER_QUESTION")) {
 
@@ -72,7 +72,7 @@ public class MessageHandler extends BaseHandler {
 
                             questionService.add(question);
                             myUser.setSubState(CreateCollectionState.ENTER_ANSWER.toString());
-
+                            userService.update(myUser);
                             String mes = """
                                     Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
                                     For example :
@@ -89,34 +89,30 @@ public class MessageHandler extends BaseHandler {
                             String[] variations = text.split("\n");
 
                             if (variations.length >= 2) {
-                                Question nonFilledQuestionUser = questionService.getNonFilledQuestionUser(lastCollectionUser);
-
-                                Answer variation = new Answer(variations[0], true, nonFilledQuestionUser.getId());
-                                variationService.add(variation);
+                                Question nonFilledQuestion = questionService.getNonFilledQuestion(lastCollectionUser);
+                                variationService.add(new Answer(variations[0], true, nonFilledQuestion.getId()));
                                 for (int i = 1; i < variations.length; i++) {
-                                    Answer var = new Answer(variations[i], false, nonFilledQuestionUser.getId());
-                                    variationService.add(var);
+                                    variationService.add(new Answer(variations[i], false, nonFilledQuestion.getId()));
                                 }
-
-                                nonFilledQuestionUser.setIsFilled(true);
-                                SendMessage addOrFinish = getSendMessage();
-
-                                bot.execute(addOrFinish);
-
+                                nonFilledQuestion.setIsFilled(true);
+                                questionService.update(nonFilledQuestion);
                                 myUser.setSubState(CreateCollectionState.CREATE_OR_ANOTHER.toString());
+                                userService.update(myUser);
+                                createOrAnother(chat);
                             } else {
                                 sendText(myUser.getChatId(), "Please send two or more answers to this question! ");
                             }
-                        } else if (Objects.equals(myUser.getSubState(), "CREATE_OR_ANOTHER")) {
-                            if (text.equals("Add question")) {
-                                myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
-                            } else if (text.equals("Finish creating collection")) {
-                                Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
-
-                                lastCollectionUser.setIsFinished(true);
-                                myUser.setBaseState(BaseState.MAIN_STATE.toString());
-                                myUser.setSubState(null);
-                            }
+//                        } else if (Objects.equals(myUser.getSubState(), "CREATE_OR_ANOTHER")) {
+//
+//                            if (text.equals("Add question")) {
+//                                myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
+//                            } else if (text.equals("Finish creating collection")) {
+//                                Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+//                                lastCollectionUser.setIsFinished(true);
+//                                collectionService.update(lastCollectionUser);
+//                                myUser.setBaseState(BaseState.MAIN_STATE.toString());
+//                                myUser.setSubState(null);
+//                            }
                         }
                     }
                 }
@@ -124,6 +120,21 @@ public class MessageHandler extends BaseHandler {
         }
 
 
+    }
+    private void createOrAnother(Chat chat) {
+        SendMessage sendMessage = new SendMessage(chat.id(), "Choose : ");
+
+        InlineKeyboardButton button1 = new InlineKeyboardButton("Add question");
+        button1.callbackData("ADD_QUESTION");
+
+        InlineKeyboardButton button2 = new InlineKeyboardButton("Create a new collection");
+        button2.callbackData("FINISH_COLLECTION");
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(button1, button2);
+
+        sendMessage.replyMarkup(inlineKeyboardMarkup);
+
+        bot.execute(sendMessage);
     }
 
     private @NotNull SendMessage getSendMessage() {
@@ -154,10 +165,6 @@ public class MessageHandler extends BaseHandler {
         bot.execute(sendMessage);
     }
 
-    private void sendText(Long id, String text) {
-        SendMessage sendMessage = new SendMessage(id, text);
-        bot.execute(sendMessage);
-    }
 
     private boolean isFromBot(Message message) {
         return message.chat().title() == null;

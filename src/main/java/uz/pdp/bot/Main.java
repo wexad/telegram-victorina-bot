@@ -29,7 +29,5 @@ public class Main {
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 }, Throwable::printStackTrace
         );
-
-
     }
 }

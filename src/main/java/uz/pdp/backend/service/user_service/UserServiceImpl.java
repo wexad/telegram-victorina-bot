@@ -57,11 +57,10 @@ public class UserServiceImpl implements UserService {
     public void update(BotUser botUser) {
         List<BotUser> botUsers = fileManager.load(BotUser.class);
         for (int i = 0; i < botUsers.size(); i++) {
-            if (botUsers.get(i).equals(botUser)) {
+            if (Objects.equals(botUser.getChatId(), botUsers.get(i).getChatId())) {
                 botUsers.set(i, botUser);
             }
         }
-
         fileManager.write(botUsers, BotUser.class);
     }
 

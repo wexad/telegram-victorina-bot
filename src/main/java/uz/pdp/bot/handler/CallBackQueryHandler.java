@@ -1,6 +1,7 @@
 package uz.pdp.bot.handler;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.InlineQuery;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
@@ -42,6 +43,21 @@ public class CallBackQueryHandler extends BaseHandler {
         System.out.println(myUser.getUserName() + " : " + data);
 
         switch (data) {
+            case "ADD_QUESTION" -> {
+                myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
+                userService.update(myUser);
+            }
+
+            case "FINISH_COLLECTION" -> {
+                Collection lastCollection = collectionService.getLastCollectionUser(myUser);
+                lastCollection.setIsFinished(true);
+                collectionService.update(lastCollection);
+                myUser.setBaseState(BaseState.MAIN_STATE.toString());
+                myUser.setSubState(null);
+                userService.update(myUser);
+
+            }
+
             case "SHOW_COLLECTIONS" -> {
                 List<Collection> userCollections = collectionService.getUserCollections(myUser);
                 if (userCollections.isEmpty()) {
@@ -52,21 +68,17 @@ public class CallBackQueryHandler extends BaseHandler {
             }
 
             case "CREATE_COLLECTION" -> {
-                System.out.println("Enter to create collection");
                 myUser.setBaseState(BaseState.CREATE_COLLECTION.toString());
-
                 myUser.setSubState(CreateCollectionState.ENTER_NAME_OF_COLLECTION.toString());
-
-                System.out.println(myUser.getSubState());
-
+                userService.update(myUser);
                 sendText(myUser.getChatId(), "Please send name of new collection : ");
             }
         }
 
-        Collection collection = collectionService.getCollectionByName(data);
-        if (collection != null) {
-            showCollection(collection, myUser);
-        }
+//        Collection collection = collectionService.getCollectionByName(data);
+//        if (collection != null) {
+//            showCollection(collection, myUser);
+//        }
 
     }
 
@@ -109,10 +121,5 @@ public class CallBackQueryHandler extends BaseHandler {
         collections.replyMarkup(inlineKeyboardMarkup);
 
         bot.execute(collections);
-    }
-
-    private void sendText(Long id, String text) {
-        SendMessage sendMessage = new SendMessage(id, text);
-        bot.execute(sendMessage);
     }
 }

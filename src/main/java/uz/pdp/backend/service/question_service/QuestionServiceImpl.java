@@ -6,6 +6,7 @@ import uz.pdp.backend.file_manager.FileManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class QuestionServiceImpl implements QuestionService {
 
@@ -39,10 +40,11 @@ public class QuestionServiceImpl implements QuestionService {
     public void add(Question question) {
         List<Question> questions = fileManager.load(Question.class);
         questions.add(question);
+        fileManager.write(questions,Question.class);
     }
 
     @Override
-    public Question getNonFilledQuestionUser(Collection lastCollectionUser) {
+    public Question getNonFilledQuestion(Collection lastCollectionUser) {
         List<Question> questions = fileManager.load(Question.class);
         for (Question question : questions) {
             if (question.getCollectionId().equals(lastCollectionUser.getId()) && !question.getIsFilled()) {
@@ -50,5 +52,16 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
         return null;
+    }
+
+    @Override
+    public void update(Question question) {
+        List<Question> questions = fileManager.load(Question.class);
+        for (int i = 0; i < questions.size(); i++) {
+            if (Objects.equals(question.getId(),questions.get(i).getId())) {
+                questions.set(i, question);
+            }
+        }
+        fileManager.write(questions,Question.class);
     }
 }
