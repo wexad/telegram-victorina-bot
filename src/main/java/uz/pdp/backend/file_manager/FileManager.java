@@ -35,13 +35,21 @@ public class FileManager<M> {
     }
 
     public List<M> load() {
+        List<M> result = new ArrayList<>();
         try {
             String json = Files.readString(Path.of(this.FILE_PATH));
             ArrayList<M> list = GSON.fromJson(json, TYPE);
-            return list != null ? list : new ArrayList<>();
+            if (list != null) {
+                for (M m : list) {
+                    if (m != null) {
+                        result.add(m);
+                    }
+                }
+            }
+            return result;
         } catch (IOException e) {
             System.out.println("Something in loading data wrong! ");
         }
-        return new ArrayList<>();
+        return result;
     }
 }
