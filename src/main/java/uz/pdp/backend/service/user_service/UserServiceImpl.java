@@ -61,12 +61,12 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        fileManager.write(botUsers);
+//        fileManager.write(botUsers);
     }
 
     @Override
     public void add(BotUser botUser) {
         botUsers.add(botUser);
-        fileManager.write(botUsers);
+//        fileManager.write(botUsers);
     }
 }

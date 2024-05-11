@@ -4,7 +4,11 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.request.SendMessage;
+import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.collection_service.CollectionServiceImpl;
 import uz.pdp.backend.service.question_service.QuestionService;
@@ -40,9 +44,31 @@ public class MessageHandler extends BaseHandler {
             if (Objects.equals(text, "/start")) {
                 sendText(chat.id(), "Hello! " + myUser.getUserName());
             }
+
+            if (isFromBot(message)) {
+                switch (myUser.getBaseState()) {
+                    case "MAIN_STATE" -> showMainMenu(chat);
+                }
+            }
         }
 
 
+    }
+
+    private void showMainMenu(Chat chat) {
+        SendMessage sendMessage = new SendMessage(chat.id(), "Menu : ");
+
+        InlineKeyboardButton button1 = new InlineKeyboardButton("My collections");
+        button1.callbackData("SHOW_COLLECTIONS");
+
+        InlineKeyboardButton button2 = new InlineKeyboardButton("Create a new collection");
+        button2.callbackData("CREATE_COLLECTION");
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(button1, button2);
+
+        sendMessage.replyMarkup(inlineKeyboardMarkup);
+
+        bot.execute(sendMessage);
     }
 
     private void sendText(Long id, String text) {
