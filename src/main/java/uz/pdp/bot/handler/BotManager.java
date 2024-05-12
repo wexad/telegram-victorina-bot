@@ -28,6 +28,6 @@ public class BotManager {
     }
 
     private boolean isFromGroup(Message message) {
-        return message.chat().type().equals(Chat.Type.group);
+        return !message.chat().type().equals(Chat.Type.Private);
     }
 }

@@ -67,6 +67,11 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    public boolean haveCollections(String userName) {
+        return false;
+    }
+
+    @Override
     public void update(Collection collection) {
         List<Collection> collections = fileManager.load(Collection.class);
         for (int i = 0; i < collections.size(); i++) {

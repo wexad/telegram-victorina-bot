@@ -99,7 +99,7 @@ public class CallBackQueryHandler extends BaseHandler {
         BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().showMainMenu();
     }
 
-    private void showCollections(List<Collection> userCollections) {
+    public void showCollections(List<Collection> userCollections) {
         myUser.setBaseState(BaseState.MY_COLLECTIONS.toString());
         userService.update(myUser);
 

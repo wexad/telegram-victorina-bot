@@ -15,4 +15,6 @@ public interface CollectionService extends BaseService<Collection> {
     void add(Collection collection);
 
     Collection getLastCollectionUser(BotUser myUser);
+
+    boolean haveCollections(String userName);
 }
