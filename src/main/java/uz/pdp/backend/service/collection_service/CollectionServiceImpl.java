@@ -68,6 +68,12 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public Collection getCollectionById(String collectionId) {
+        List<Collection> collections = fileManager.load(Collection.class);
+        for (Collection collection : collections) {
+            if (Objects.equals(collectionId, collection.getId())) {
+                return collection;
+            }
+        }
         return null;
     }
 
@@ -77,6 +83,7 @@ public class CollectionServiceImpl implements CollectionService {
         for (int i = 0; i < collections.size(); i++) {
             if (Objects.equals(collection.getId(), collections.get(i).getId())) {
                 collections.set(i, collection);
+                return;
             }
         }
         fileManager.write(collections, Collection.class);

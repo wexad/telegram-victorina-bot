@@ -1,8 +1,0 @@
-[
-  {
-    "collectionId": "f538c852-357e-47aa-8872-94ea01533a1c",
-    "text": "Asad",
-    "isFilled": true,
-    "id": "3fc206f0-6c39-4482-ad25-f5e5d9839d94"
-  }
-]

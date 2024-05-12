@@ -2,6 +2,7 @@ package uz.pdp.backend.service.game_service;
 
 import uz.pdp.backend.file_manager.FileManager;
 import uz.pdp.backend.model.game.Game;
+import uz.pdp.backend.model.group.Group;
 
 import java.io.File;
 import java.util.List;
@@ -39,11 +40,23 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game getGameWithNullTime() {
+        List<Game> games = fileManager.load(Game.class);
+        for (Game game : games) {
+            if (Objects.isNull(game.getTimeForQuiz())) {
+                return game;
+            }
+        }
         return null;
     }
 
     @Override
     public Game getGameOfCurrent(Long chatId) {
+        List<Game> games = fileManager.load(Game.class);
+        for (Game game : games) {
+            if (!game.getIsActive() && Objects.equals(game.getGroupId(),chatId)) {
+                return game;
+            }
+        }
         return null;
     }
 }
