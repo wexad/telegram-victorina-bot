@@ -1,10 +1,11 @@
 package uz.pdp.bot.handler;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.ChatAdministratorRights;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
@@ -43,10 +44,6 @@ public class CallBackQueryHandler extends BaseHandler {
 
         System.out.println(myUser.getUserName() + " : " + data);
 
-        if (myUser.getBaseState().equals(BaseState.MY_COLLECTIONS.toString())) {
-
-        }
-
         if (Objects.equals(myUser.getSubState(), CreateCollectionState.CREATE_OR_ANOTHER.toString())) {
             switch (data) {
 
@@ -76,7 +73,7 @@ public class CallBackQueryHandler extends BaseHandler {
                 if (userCollections.isEmpty()) {
                     sendText(myUser.getChatId(), "You don't have any collections! ");
                 } else {
-                    showCollections(myUser, userCollections);
+                    showCollections(userCollections);
                 }
             }
 
@@ -88,51 +85,34 @@ public class CallBackQueryHandler extends BaseHandler {
             }
         }
 
-        Collection collection = collectionService.getCollectionByName(data);
-        if (collection != null) {
-            showCollection(collection, myUser);
-        }
 
     }
 
-    private void showCollection(Collection collection, BotUser botUser) {
-        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName());
-        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
+    private void showCollections(List<Collection> userCollections) {
+        myUser.setBaseState(BaseState.MY_COLLECTIONS.toString());
+        userService.update(myUser);
 
-        int count = 1;
-        for (Question question : questionsByCollectionId) {
-            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
-            List<Answer> variationsByQuestionId = answerService.getVariationsByQuestionId(question.getId());
-            int count1 = 1;
-            for (Answer variation : variationsByQuestionId) {
-                stringBuilder.append("\t").append("Variation ").append(count1++).append(" : ").append(variation.getText());
-            }
-        }
+        SendMessage showCollections = new SendMessage(myUser.getChatId(), "Your collections : ");
 
-        sendText(botUser.getChatId(), stringBuilder.toString());
-        myUser.setBaseState(BaseState.MAIN_STATE.toString());
-    }
-
-    private void showCollections(BotUser botUser, List<Collection> userCollections) {
-        SendMessage collections = new SendMessage(botUser.getId(), "Your collections (choose one to see full questions and variations) : ");
-
-        InlineKeyboardButton[][] inlineKeyboardButtons = new InlineKeyboardButton[userCollections.size() + 1][1];
+        KeyboardButton[][] collections = new KeyboardButton[userCollections.size() + 1][1];
 
         for (int i = 0; i < userCollections.size(); i++) {
-            InlineKeyboardButton keyboardButton = new InlineKeyboardButton(userCollections.get(i).getName());
-            keyboardButton.callbackData(userCollections.get(i).getName());
+            Collection userCollection = userCollections.get(i);
+            KeyboardButton keyboardButton = new KeyboardButton(userCollection.getName());
 
-            inlineKeyboardButtons[i][0] = keyboardButton;
+            collections[i][0] = keyboardButton;
         }
-        InlineKeyboardButton button = new InlineKeyboardButton("Back");
-        button.callbackData("Back");
 
-        inlineKeyboardButtons[userCollections.size()][0] = button;
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(collections);
 
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(inlineKeyboardButtons);
+        showCollections.replyMarkup(replyKeyboardMarkup);
 
-        collections.replyMarkup(inlineKeyboardMarkup);
+        SendResponse execute = bot.execute(showCollections);
 
-        bot.execute(collections);
+        if (execute.isOk()) {
+            System.out.println("Sent!");
+        } else {
+            System.out.println("Something wrong! ");
+        }
     }
 }

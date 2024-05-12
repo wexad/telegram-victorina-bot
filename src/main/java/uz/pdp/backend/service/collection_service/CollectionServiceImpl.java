@@ -29,7 +29,7 @@ public class CollectionServiceImpl implements CollectionService {
         List<Collection> userCollections = new ArrayList<>();
 
         for (Collection collection : collections) {
-            if (Objects.equals(collection.getUserName(), botUser.getUserName())) {
+            if (Objects.equals(collection.getUserName(), botUser.getUserName()) && collection.getIsFinished()) {
                 userCollections.add(collection);
             }
         }
@@ -70,7 +70,7 @@ public class CollectionServiceImpl implements CollectionService {
     public void update(Collection collection) {
         List<Collection> collections = fileManager.load(Collection.class);
         for (int i = 0; i < collections.size(); i++) {
-            if (Objects.equals(collection.getId(),collections.get(i).getId())) {
+            if (Objects.equals(collection.getId(), collections.get(i).getId())) {
                 collections.set(i, collection);
             }
         }

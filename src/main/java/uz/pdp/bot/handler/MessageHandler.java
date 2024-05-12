@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.question.Question;
 import uz.pdp.backend.model.answer.Answer;
@@ -23,6 +24,7 @@ import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MessageHandler extends BaseHandler {
@@ -33,12 +35,13 @@ public class MessageHandler extends BaseHandler {
 
     private final QuestionService questionService = QuestionServiceImpl.getInstance();
 
-    private final AnswerService variationService = AnswerServiceImpl.getInstance();
+    private final AnswerService answerService = AnswerServiceImpl.getInstance();
 
     @Override
     public void handle(Update update) {
         Message message = update.message();
         Chat chat = message.chat();
+
         User from = message.from();
         String text = message.text();
 
@@ -100,11 +103,36 @@ public class MessageHandler extends BaseHandler {
                             }
                         }
                     }
+
+                    case "MY_COLLECTIONS" -> {
+                        Collection collection = collectionService.getCollectionByName(text);
+                        if (collection != null) {
+                            showCollection(collection);
+                        }
+                    }
                 }
             }
         }
 
 
+    }
+
+    private void showCollection(Collection collection) {
+        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName());
+        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
+
+        int count = 1;
+        for (Question question : questionsByCollectionId) {
+            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
+            List<Answer> variationsByQuestionId = answerService.getVariationsByQuestionId(question.getId());
+            int count1 = 1;
+            for (Answer variation : variationsByQuestionId) {
+                stringBuilder.append("\t").append("Variation ").append(count1++).append(" : ").append(variation.getText());
+            }
+        }
+
+        sendText(myUser.getChatId(), stringBuilder.toString());
+        myUser.setBaseState(BaseState.MAIN_STATE.toString());
     }
 
     private void startMessage(Long id) {
@@ -115,9 +143,9 @@ public class MessageHandler extends BaseHandler {
 
     private void createAnswers(String[] answers, Collection lastCollectionUser) {
         Question nonFilledQuestion = questionService.getNonFilledQuestion(lastCollectionUser);
-        variationService.add(new Answer(answers[0], true, nonFilledQuestion.getId()));
+        answerService.add(new Answer(answers[0], true, nonFilledQuestion.getId()));
         for (int i = 1; i < answers.length; i++) {
-            variationService.add(new Answer(answers[i], false, nonFilledQuestion.getId()));
+            answerService.add(new Answer(answers[i], false, nonFilledQuestion.getId()));
         }
         nonFilledQuestion.setIsFilled(true);
         questionService.update(nonFilledQuestion);
@@ -188,6 +216,8 @@ public class MessageHandler extends BaseHandler {
 
 
     private boolean isFromBot(Message message) {
-        return message.chat().title() == null;
+        Chat chat = message.chat();
+
+        return chat.type().equals(Chat.Type.Private);
     }
 }

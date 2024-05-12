@@ -1,0 +1,9 @@
+[
+  {
+    "chatId": 5408527766,
+    "firstName": "Saidkamol",
+    "userName": "SaidKamol1912",
+    "baseState": "MAIN_STATE",
+    "id": "b89453ef-f279-4e11-a5ed-3afb2409b720"
+  }
+]
