@@ -7,13 +7,21 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendPoll;
+import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
+import uz.pdp.backend.model.game.Game;
 import uz.pdp.backend.model.question.Question;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
+import uz.pdp.bot.enums.bot_state.child.GameState;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MessageHandler extends BaseHandler {
 
@@ -29,61 +37,136 @@ public class MessageHandler extends BaseHandler {
         if (Objects.nonNull(text)) {
             System.out.println(myUser.getUserName() + " : " + text);
 
-            if (Objects.equals(text, "/start")) {
-                startMessage(chat.id());
-            }
+            if (isFromBot(message)) {
+                if (Objects.equals(text, "/start")) {
+                    startMessage(chat.id());
+                }
 
-            System.out.println(myUser.getBaseState());
-            switch (myUser.getBaseState()) {
-                case "MAIN_STATE" -> showMainMenu();
+                System.out.println(myUser.getBaseState());
+                switch (myUser.getBaseState()) {
+                    case "MAIN_STATE" -> showMainMenu();
 
-                case "CREATE_COLLECTION" -> {
-                    if (Objects.equals(myUser.getSubState(), "ENTER_NAME_OF_COLLECTION")) {
-                        createCollection(text);
+                    case "CREATE_COLLECTION" -> {
+                        if (Objects.equals(myUser.getSubState(), "ENTER_NAME_OF_COLLECTION")) {
+                            createCollection(text);
 
-                        sendText(myUser.getChatId(), "Enter question please : ");
-                    } else if (Objects.equals(myUser.getSubState(), "ENTER_QUESTION")) {
+                            sendText(myUser.getChatId(), "Enter question please : ");
+                        } else if (Objects.equals(myUser.getSubState(), "ENTER_QUESTION")) {
 
-                        Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+                            Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
 
-                        if (lastCollectionUser != null) {
-                            createQuestion(lastCollectionUser.getId(), text);
+                            if (lastCollectionUser != null) {
+                                createQuestion(lastCollectionUser.getId(), text);
 
-                            String mes = """
-                                    Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
-                                    For example :
-                                    true
-                                    false
-                                    false
-                                    false
-                                    """;
+                                String mes = """
+                                        Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
+                                        For example :
+                                        true
+                                        false
+                                        false
+                                        false
+                                        """;
 
-                            sendText(myUser.getChatId(), mes);
+                                sendText(myUser.getChatId(), mes);
+                            }
+                        } else if (Objects.equals(myUser.getSubState(), CreateCollectionState.ENTER_ANSWER.toString())) {
+                            Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+
+                            String[] answers = text.split("\n");
+
+                            if (answers.length >= 2) {
+                                createAnswers(answers, lastCollectionUser);
+
+                                createOrAnother(chat);
+                            } else {
+                                sendText(myUser.getChatId(), "Please send two or more answers to this question! ");
+                                sendText(myUser.getChatId(), """
+                                        Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
+                                        For example :
+                                        true
+                                        false
+                                        false
+                                        false
+                                        """);
+                            }
                         }
-                    } else if (Objects.equals(myUser.getSubState(), CreateCollectionState.ENTER_ANSWER.toString())) {
-                        Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+                    }
 
-                        String[] answers = text.split("\n");
+                    case "GAME" -> {
+                        if (myUser.getSubState().equals(GameState.GAME_CREATING.toString())) {
+                            Game game = gameService.getGameWithNullTime();
+                            game.setTimeForQuiz(Integer.parseInt(text));
+                            game.setIsActive(true);
 
-                        if (answers.length >= 2) {
-                            createAnswers(answers, lastCollectionUser);
+                            gameService.update(game);
 
-                            createOrAnother(chat);
+                            myUser.setSubState(GameState.QUIZ_TIME.toString());
+
+                            sendText(myGroup.getChatId(), "Please send to group command /begin ");
+                        }
+                    }
+                }
+            } else {
+                switch (text) {
+                    case "/start" -> {
+                        sendText(myGroup.getChatId(), "Hello! " + myUser.getUserName() + " and others! ");
+                        myUser.setBaseState(BaseState.MAIN_STATE.toString());
+                        userService.update(myUser);
+                    }
+                    case "/play" -> {
+                        List<Collection> userCollections = collectionService.getUserCollections(myUser);
+
+                        if (!userCollections.isEmpty()) {
+                            myUser.setBaseState(BaseState.GAME.toString());
+                            myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
+                            userService.update(myUser);
+                            showCollections(userCollections);
                         } else {
-                            sendText(myUser.getChatId(), "Please send two or more answers to this question! ");
-                            sendText(myUser.getChatId(), """
-                                    Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
-                                    For example :
-                                    true
-                                    false
-                                    false
-                                    false
-                                    """);
+                            sendText(myUser.getChatId(), "You don't have any collections! Please create at least one! ");
                         }
+                    }
+                    case "/begin" -> {
+                        Game game = gameService.getGameOfCurrent(myGroup.getChatId());
+
+                        String collectionId = game.getCollectionId();
+
+                        Collection collection = collectionService.getCollectionById(collectionId);
+
+                        List<Question> questions = questionService.getQuestionsByCollectionId(collectionId);
+
+                        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+
+                        scheduledExecutorService.scheduleWithFixedDelay(() -> {
+                            SendPoll sendPoll = new SendPoll(myGroup.getChatId(), questions.get(0).getText(), answerService.getOptionsByQuestionId(questions.get(0).getId()));
+                        }, 1, game.getTimeForQuiz(), TimeUnit.SECONDS);
                     }
                 }
             }
         }
+    }
+
+    private void showCollections(List<Collection> userCollections) {
+        SendMessage showCollections = new SendMessage(myUser.getChatId(), "Your collections : ");
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        for (Collection userCollection : userCollections) {
+            InlineKeyboardButton button = new InlineKeyboardButton(userCollection.getName());
+            button.callbackData(userCollection.getName());
+            inlineKeyboardMarkup.addRow(button);
+        }
+        showCollections.replyMarkup(inlineKeyboardMarkup);
+
+        SendResponse execute = bot.execute(showCollections);
+
+        if (execute.isOk()) {
+            System.out.println("Sent!");
+        } else {
+            System.out.println("Something wrong! ");
+        }
+    }
+
+    private boolean isFromBot(Message message) {
+        return message.chat().type().equals(Chat.Type.Private);
     }
 
     private void startMessage(Long id) {

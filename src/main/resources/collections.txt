@@ -1,14 +1,8 @@
 [
   {
-    "name": "IT",
+    "name": "A",
     "userName": "wexad",
     "isFinished": true,
-    "id": "282bc749-f25d-46ff-bc6b-3127ae3f2580"
-  },
-  {
-    "name": "OOP",
-    "userName": "wexad",
-    "isFinished": true,
-    "id": "68a4f13d-dce0-431f-bf66-19b79083ba0f"
+    "id": "f538c852-357e-47aa-8872-94ea01533a1c"
   }
 ]

@@ -67,8 +67,8 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
-    public boolean haveCollections(String userName) {
-        return false;
+    public Collection getCollectionById(String collectionId) {
+        return null;
     }
 
     @Override

@@ -63,8 +63,6 @@ public abstract class BaseHandler {
             myUser = BotUser.builder()
                     .chatId(from.id())
                     .userName(from.username())
-                    .baseState(BaseState.MAIN_STATE.name())
-                    .subState(null)
                     .firstName(from.firstName())
                     .lastName(from.lastName())
                     .build();

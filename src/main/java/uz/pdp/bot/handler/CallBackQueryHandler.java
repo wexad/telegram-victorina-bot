@@ -8,10 +8,12 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
+import uz.pdp.backend.model.game.Game;
 import uz.pdp.backend.model.question.Question;
 import uz.pdp.bean.BeanController;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
+import uz.pdp.bot.enums.bot_state.child.GameState;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,10 +29,28 @@ public class CallBackQueryHandler extends BaseHandler {
 
         System.out.println(myUser.getUserName() + " : " + data);
 
-        if (Objects.equals(myUser.getBaseState(), BaseState.MY_COLLECTIONS.toString())) {
-            Collection collectionByName = collectionService.getCollectionByName(data);
-            if (collectionByName != null) {
-                showCollection(collectionByName);
+        switch (myUser.getBaseState()) {
+            case "MY_COLLECTIONS" -> {
+                Collection collectionByName = collectionService.getCollectionByName(data);
+                if (collectionByName != null) {
+                    showCollection(collectionByName);
+                }
+            }
+
+            case "GAME" -> {
+                Collection collectionByName = collectionService.getCollectionByName(data);
+                if (collectionByName != null) {
+                    showCollection(collectionByName);
+                    sendText(myUser.getChatId(), "Please send time for each quiz in seconds : ");
+                    myUser.setBaseState(BaseState.GAME.toString());
+                    myUser.setSubState(GameState.GAME_CREATING.toString());
+                    userService.update(myUser);
+
+                    Game game = new Game(myGroup.getChatId(), collectionByName.getId(), null, false);
+
+                    gameService.add(game);
+                    gameService.update(game);
+                }
             }
         }
 
@@ -84,7 +104,7 @@ public class CallBackQueryHandler extends BaseHandler {
         int count = 1;
         for (Question question : questionsByCollectionId) {
             stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
-            List<Answer> variationsByQuestionId = answerService.getVariationsByQuestionId(question.getId());
+            List<Answer> variationsByQuestionId = answerService.getAnswersByQuestionId(question.getId());
             int count1 = 1;
             for (Answer variation : variationsByQuestionId) {
                 stringBuilder.append("\n").append("Answer ").append(count1++).append(" : ").append(variation.getText());

@@ -36,4 +36,14 @@ public class GameServiceImpl implements GameService {
         games.add(game);
         fileManager.write(games,Game.class);
     }
+
+    @Override
+    public Game getGameWithNullTime() {
+        return null;
+    }
+
+    @Override
+    public Game getGameOfCurrent(Long chatId) {
+        return null;
+    }
 }

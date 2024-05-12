@@ -5,14 +5,6 @@
     "lastName": "Jamshidovich",
     "userName": "wexad",
     "baseState": "MAIN_STATE",
-    "id": "49e3639a-0853-46cf-9bef-d1d509d72d80"
-  },
-  {
-    "chatId": 5408527766,
-    "firstName": "Saidkamol",
-    "userName": "SaidKamol1912",
-    "baseState": "GAME",
-    "subState": "CHOOSE_COLLECTION",
-    "id": "fde02b19-cc4e-4745-b458-3e6a054fa676"
+    "id": "c4a425ca-43c6-48ee-8158-639a5e66d4ff"
   }
 ]

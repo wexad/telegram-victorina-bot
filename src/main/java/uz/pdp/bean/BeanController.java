@@ -8,7 +8,6 @@ import uz.pdp.backend.service.question_service.QuestionServiceImpl;
 import uz.pdp.backend.service.result_service.ResultServiceImpl;
 import uz.pdp.backend.service.user_service.UserServiceImpl;
 import uz.pdp.bot.handler.CallBackQueryHandler;
-import uz.pdp.bot.handler.GroupMessageHandler;
 import uz.pdp.bot.handler.MessageHandler;
 import uz.pdp.bot.handler.PollAnswerHandler;
 
@@ -23,5 +22,4 @@ public interface BeanController {
     ThreadLocal<MessageHandler> MESSAGE_HANDLER_THREAD_LOCAL = ThreadLocal.withInitial(MessageHandler::new);
     ThreadLocal<CallBackQueryHandler> CALL_BACK_QUERY_HANDLER_THREAD_LOCAL  = ThreadLocal.withInitial(CallBackQueryHandler::new);
     ThreadLocal<PollAnswerHandler> POLL_ANSWER_HANDLER_THREAD_LOCAL = ThreadLocal.withInitial(PollAnswerHandler::new);
-    ThreadLocal<GroupMessageHandler> GROUP_MESSAGE_HANDLER_THREAD_LOCAL = ThreadLocal.withInitial(GroupMessageHandler::new);
 }

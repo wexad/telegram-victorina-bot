@@ -15,11 +15,7 @@ public class BotManager {
         PollAnswer pollAnswer = update.pollAnswer();
 
         if (Objects.nonNull(message)) {
-            if (isFromGroup(message)) {
-                BeanController.GROUP_MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
-            } else {
-                BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
-            }
+            BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
         } else if (Objects.nonNull(callbackQuery)) {
             BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().handle(update);
         } else if (Objects.nonNull(pollAnswer)) {
