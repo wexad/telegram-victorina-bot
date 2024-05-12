@@ -50,72 +50,57 @@ public class MessageHandler extends BaseHandler {
                 startMessage(chat.id());
             }
 
-            if (isFromBot(message)) {
-                System.out.println(myUser.getBaseState());
-                switch (myUser.getBaseState()) {
-                    case "MAIN_STATE" -> showMainMenu();
+            System.out.println(myUser.getBaseState());
+            switch (myUser.getBaseState()) {
+                case "MAIN_STATE" -> showMainMenu();
 
-                    case "CREATE_COLLECTION" -> {
-                        if (Objects.equals(myUser.getSubState(), "ENTER_NAME_OF_COLLECTION")) {
-                            createCollection(text);
+                case "CREATE_COLLECTION" -> {
+                    if (Objects.equals(myUser.getSubState(), "ENTER_NAME_OF_COLLECTION")) {
+                        createCollection(text);
 
-                            sendText(myUser.getChatId(), "Enter question please : ");
-                        } else if (Objects.equals(myUser.getSubState(), "ENTER_QUESTION")) {
+                        sendText(myUser.getChatId(), "Enter question please : ");
+                    } else if (Objects.equals(myUser.getSubState(), "ENTER_QUESTION")) {
 
-                            Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
+                        Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
 
-                            if (lastCollectionUser != null) {
-                                createQuestion(lastCollectionUser.getId(), text);
+                        if (lastCollectionUser != null) {
+                            createQuestion(lastCollectionUser.getId(), text);
 
-                                String mes = """
-                                        Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
-                                        For example :
-                                        true
-                                        false
-                                        false
-                                        false
-                                        """;
+                            String mes = """
+                                    Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
+                                    For example :
+                                    true
+                                    false
+                                    false
+                                    false
+                                    """;
 
-                                sendText(myUser.getChatId(), mes);
-                            }
-                        } else if (Objects.equals(myUser.getSubState(), CreateCollectionState.ENTER_ANSWER.toString())) {
-                            Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
-
-                            String[] answers = text.split("\n");
-
-                            if (answers.length >= 2) {
-                                createAnswers(answers, lastCollectionUser);
-
-                                createOrAnother(chat);
-                            } else {
-                                sendText(myUser.getChatId(), "Please send two or more answers to this question! ");
-                                sendText(myUser.getChatId(), """
-                                        Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
-                                        For example :
-                                        true
-                                        false
-                                        false
-                                        false
-                                        """);
-                            }
+                            sendText(myUser.getChatId(), mes);
                         }
-                    }
+                    } else if (Objects.equals(myUser.getSubState(), CreateCollectionState.ENTER_ANSWER.toString())) {
+                        Collection lastCollectionUser = collectionService.getLastCollectionUser(myUser);
 
-                    case "MY_COLLECTIONS" -> {
-                        Collection collection = collectionService.getCollectionByName(text);
-                        if (collection != null) {
-                            showCollection(collection);
+                        String[] answers = text.split("\n");
+
+                        if (answers.length >= 2) {
+                            createAnswers(answers, lastCollectionUser);
+
+                            createOrAnother(chat);
+                        } else {
+                            sendText(myUser.getChatId(), "Please send two or more answers to this question! ");
+                            sendText(myUser.getChatId(), """
+                                    Please give 4 possible answers to this question in one message (the first line must contain the correct answer) :
+                                    For example :
+                                    true
+                                    false
+                                    false
+                                    false
+                                    """);
                         }
                     }
                 }
             }
         }
-
-
-    }
-
-    private void showCollection(Collection collection) {
-
     }
 
     private void startMessage(Long id) {

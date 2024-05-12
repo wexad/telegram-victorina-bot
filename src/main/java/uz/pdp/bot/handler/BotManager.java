@@ -1,9 +1,6 @@
 package uz.pdp.bot.handler;
 
-import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.PollAnswer;
-import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.*;
 import uz.pdp.bean.BeanController;
 
 import java.util.Objects;
@@ -18,11 +15,19 @@ public class BotManager {
         PollAnswer pollAnswer = update.pollAnswer();
 
         if (Objects.nonNull(message)) {
-            BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
+            if (isFromGroup(message)) {
+                BeanController.GROUP_MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
+            } else {
+                BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
+            }
         } else if (Objects.nonNull(callbackQuery)) {
             BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().handle(update);
         } else if (Objects.nonNull(pollAnswer)) {
             BeanController.POLL_ANSWER_HANDLER_THREAD_LOCAL.get().handle(update);
         }
+    }
+
+    private boolean isFromGroup(Message message) {
+        return message.chat().type().equals(Chat.Type.group);
     }
 }
