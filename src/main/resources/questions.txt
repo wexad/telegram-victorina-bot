@@ -1,0 +1,8 @@
+[
+  {
+    "collectionId": "9dc67ae4-b533-4bbd-8acf-8c333d5d017f",
+    "text": "isTrue",
+    "isFilled": true,
+    "id": "2920610d-ecb0-4d6b-b9df-7da5f64f9aa1"
+  }
+]

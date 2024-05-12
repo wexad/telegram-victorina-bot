@@ -93,20 +93,13 @@ public class CallBackQueryHandler extends BaseHandler {
         userService.update(myUser);
 
         SendMessage showCollections = new SendMessage(myUser.getChatId(), "Your collections : ");
-
-        KeyboardButton[][] collections = new KeyboardButton[userCollections.size() + 1][1];
-
-        for (int i = 0; i < userCollections.size(); i++) {
-            Collection userCollection = userCollections.get(i);
-            KeyboardButton keyboardButton = new KeyboardButton(userCollection.getName());
-
-            collections[i][0] = keyboardButton;
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        for (Collection userCollection : userCollections) {
+            InlineKeyboardButton button = new InlineKeyboardButton(userCollection.getName());
+            button.callbackData(userCollection.getName());
+            inlineKeyboardMarkup.addRow(button);
         }
-
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(collections);
-
-        showCollections.replyMarkup(replyKeyboardMarkup);
-
+        showCollections.replyMarkup(inlineKeyboardMarkup);
         SendResponse execute = bot.execute(showCollections);
 
         if (execute.isOk()) {
@@ -114,5 +107,8 @@ public class CallBackQueryHandler extends BaseHandler {
         } else {
             System.out.println("Something wrong! ");
         }
+        myUser.setBaseState(BaseState.MAIN_STATE.toString());
+        myUser.setSubState(null);
+        userService.update(myUser);
     }
 }
