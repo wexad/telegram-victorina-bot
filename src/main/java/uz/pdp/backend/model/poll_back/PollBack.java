@@ -1,4 +1,4 @@
-package uz.pdp.backend.model;
+package uz.pdp.backend.model.poll_back;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
