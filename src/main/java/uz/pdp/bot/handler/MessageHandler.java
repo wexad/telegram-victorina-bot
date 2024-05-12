@@ -186,18 +186,6 @@ public class MessageHandler extends BaseHandler {
         bot.execute(sendMessage);
     }
 
-    private SendMessage getSendMessage() {
-        SendMessage addOrFinish = new SendMessage(myUser.getChatId(), "Choose : ");
-        KeyboardButton keyboardButton1 = new KeyboardButton("Add question");
-
-        KeyboardButton keyboardButton2 = new KeyboardButton("Finish creating collection");
-
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardButton1, keyboardButton2);
-
-        addOrFinish.replyMarkup(replyKeyboardMarkup);
-        return addOrFinish;
-    }
-
     public void showMainMenu() {
         SendMessage sendMessage = new SendMessage(myUser.getChatId(), "Menu : ");
 
