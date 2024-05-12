@@ -1,17 +1,10 @@
 [
   {
-    "chatId": 5408527766,
-    "firstName": "Saidkamol",
-    "userName": "SaidKamol1912",
-    "baseState": "MAIN_STATE",
-    "id": "2974e69b-d49a-493d-8947-2d9a908ea00e"
-  },
-  {
     "chatId": 5686300407,
     "firstName": "Sherzod",
     "lastName": "Jamshidovich",
     "userName": "wexad",
     "baseState": "MAIN_STATE",
-    "id": "b69867b6-a981-4337-b7ef-6a44c1c326b0"
+    "id": "49e3639a-0853-46cf-9bef-d1d509d72d80"
   }
 ]

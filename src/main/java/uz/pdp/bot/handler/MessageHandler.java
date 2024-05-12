@@ -6,21 +6,18 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import uz.pdp.backend.model.bot_user.BotUser;
+import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.question.Question;
-import uz.pdp.backend.model.answer.Answer;
+import uz.pdp.backend.service.answer_service.AnswerService;
+import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.collection_service.CollectionServiceImpl;
 import uz.pdp.backend.service.question_service.QuestionService;
 import uz.pdp.backend.service.question_service.QuestionServiceImpl;
 import uz.pdp.backend.service.user_service.UserService;
 import uz.pdp.backend.service.user_service.UserServiceImpl;
-import uz.pdp.backend.service.answer_service.AnswerService;
-import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 
@@ -118,21 +115,7 @@ public class MessageHandler extends BaseHandler {
     }
 
     private void showCollection(Collection collection) {
-        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName());
-        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
 
-        int count = 1;
-        for (Question question : questionsByCollectionId) {
-            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
-            List<Answer> variationsByQuestionId = answerService.getVariationsByQuestionId(question.getId());
-            int count1 = 1;
-            for (Answer variation : variationsByQuestionId) {
-                stringBuilder.append("\t").append("Variation ").append(count1++).append(" : ").append(variation.getText());
-            }
-        }
-
-        sendText(myUser.getChatId(), stringBuilder.toString());
-        myUser.setBaseState(BaseState.MAIN_STATE.toString());
     }
 
     private void startMessage(Long id) {

@@ -1,8 +1,20 @@
 [
   {
-    "collectionId": "9dc67ae4-b533-4bbd-8acf-8c333d5d017f",
+    "collectionId": "282bc749-f25d-46ff-bc6b-3127ae3f2580",
     "text": "isTrue",
     "isFilled": true,
-    "id": "2920610d-ecb0-4d6b-b9df-7da5f64f9aa1"
+    "id": "df54f675-f371-4232-9c03-6502fc398fba"
+  },
+  {
+    "collectionId": "282bc749-f25d-46ff-bc6b-3127ae3f2580",
+    "text": "isFalse",
+    "isFilled": true,
+    "id": "d2e91fa7-b6b4-464e-a283-bff0c4371dbe"
+  },
+  {
+    "collectionId": "68a4f13d-dce0-431f-bf66-19b79083ba0f",
+    "text": "alif",
+    "isFilled": true,
+    "id": "5509e0f1-9169-4076-9056-6a2c79c6fd1d"
   }
 ]

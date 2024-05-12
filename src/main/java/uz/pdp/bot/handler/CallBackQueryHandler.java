@@ -1,13 +1,13 @@
 package uz.pdp.bot.handler;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.ChatAdministratorRights;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.*;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
+import org.jetbrains.annotations.NotNull;
 import uz.pdp.backend.model.answer.Answer;
-import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.question.Question;
 import uz.pdp.backend.service.answer_service.AnswerService;
@@ -44,6 +44,13 @@ public class CallBackQueryHandler extends BaseHandler {
 
         System.out.println(myUser.getUserName() + " : " + data);
 
+        if (Objects.equals(myUser.getBaseState(), BaseState.MY_COLLECTIONS.toString())) {
+            Collection collectionByName = collectionService.getCollectionByName(data);
+            if (collectionByName != null) {
+                showCollection(collectionByName);
+            }
+        }
+
         if (Objects.equals(myUser.getSubState(), CreateCollectionState.CREATE_OR_ANOTHER.toString())) {
             switch (data) {
 
@@ -72,6 +79,7 @@ public class CallBackQueryHandler extends BaseHandler {
                 List<Collection> userCollections = collectionService.getUserCollections(myUser);
                 if (userCollections.isEmpty()) {
                     sendText(myUser.getChatId(), "You don't have any collections! ");
+                    BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().showMainMenu();
                 } else {
                     showCollections(userCollections);
                 }
@@ -84,14 +92,45 @@ public class CallBackQueryHandler extends BaseHandler {
                 sendText(myUser.getChatId(), "Please send name of new collection : ");
             }
         }
+    }
 
+    private void showCollection(Collection collection) {
+        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName() + "\n");
+        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
 
+        int count = 1;
+        for (Question question : questionsByCollectionId) {
+            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
+            List<Answer> variationsByQuestionId = answerService.getVariationsByQuestionId(question.getId());
+            int count1 = 1;
+            for (Answer variation : variationsByQuestionId) {
+                stringBuilder.append("\n").append("Answer ").append(count1++).append(" : ").append(variation.getText());
+            }
+            stringBuilder.append("\n");
+        }
+
+        sendText(myUser.getChatId(), stringBuilder.toString());
+        myUser.setBaseState(BaseState.MAIN_STATE.toString());
+        userService.update(myUser);
+
+        BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().showMainMenu();
     }
 
     private void showCollections(List<Collection> userCollections) {
         myUser.setBaseState(BaseState.MY_COLLECTIONS.toString());
         userService.update(myUser);
 
+        SendMessage showCollections = getSendMessage(userCollections);
+        SendResponse execute = bot.execute(showCollections);
+
+        if (execute.isOk()) {
+            System.out.println("Sent!");
+        } else {
+            System.out.println("Something wrong! ");
+        }
+    }
+
+    private SendMessage getSendMessage(List<Collection> userCollections) {
         SendMessage showCollections = new SendMessage(myUser.getChatId(), "Your collections : ");
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         for (Collection userCollection : userCollections) {
@@ -100,15 +139,6 @@ public class CallBackQueryHandler extends BaseHandler {
             inlineKeyboardMarkup.addRow(button);
         }
         showCollections.replyMarkup(inlineKeyboardMarkup);
-        SendResponse execute = bot.execute(showCollections);
-
-        if (execute.isOk()) {
-            System.out.println("Sent!");
-        } else {
-            System.out.println("Something wrong! ");
-        }
-        myUser.setBaseState(BaseState.MAIN_STATE.toString());
-        myUser.setSubState(null);
-        userService.update(myUser);
+        return showCollections;
     }
 }

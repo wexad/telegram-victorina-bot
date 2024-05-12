@@ -19,7 +19,7 @@ public class AnswerServiceImpl implements AnswerService {
     private final FileManager<Answer> fileManager;
 
     public AnswerServiceImpl() {
-        fileManager = new FileManager<>("src/main/resources/answer.txt");
+        fileManager = new FileManager<>("src/main/resources/answers.txt");
     }
 
     @Override

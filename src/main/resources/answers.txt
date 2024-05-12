@@ -1,0 +1,68 @@
+[
+  {
+    "text": "true",
+    "isTrue": true,
+    "questionId": "df54f675-f371-4232-9c03-6502fc398fba",
+    "id": "a3a44c43-f275-44ec-bf47-dd00e611abdd"
+  },
+  {
+    "text": "false",
+    "isTrue": false,
+    "questionId": "df54f675-f371-4232-9c03-6502fc398fba",
+    "id": "fd554ed0-24b3-4cae-9882-188fef0053cf"
+  },
+  {
+    "text": "not given",
+    "isTrue": false,
+    "questionId": "df54f675-f371-4232-9c03-6502fc398fba",
+    "id": "e77d2cd0-fcff-40bd-af22-e039ce7ae59e"
+  },
+  {
+    "text": "no",
+    "isTrue": false,
+    "questionId": "df54f675-f371-4232-9c03-6502fc398fba",
+    "id": "92463b50-6ce2-4ba6-b02a-a17a411141db"
+  },
+  {
+    "text": "false",
+    "isTrue": true,
+    "questionId": "d2e91fa7-b6b4-464e-a283-bff0c4371dbe",
+    "id": "e30d3fab-fc16-4a77-b7af-a4c32ef0814b"
+  },
+  {
+    "text": "no",
+    "isTrue": false,
+    "questionId": "d2e91fa7-b6b4-464e-a283-bff0c4371dbe",
+    "id": "130fdd5a-b7c8-4521-9815-687fcddcef8f"
+  },
+  {
+    "text": "true",
+    "isTrue": false,
+    "questionId": "d2e91fa7-b6b4-464e-a283-bff0c4371dbe",
+    "id": "f8545486-744e-403a-849e-d0c5ce5649f4"
+  },
+  {
+    "text": "a",
+    "isTrue": true,
+    "questionId": "5509e0f1-9169-4076-9056-6a2c79c6fd1d",
+    "id": "12d07b43-07ca-4339-a741-671581708df7"
+  },
+  {
+    "text": "b",
+    "isTrue": false,
+    "questionId": "5509e0f1-9169-4076-9056-6a2c79c6fd1d",
+    "id": "69d17ccb-1747-4bb5-af31-4e9b87a124f1"
+  },
+  {
+    "text": "c",
+    "isTrue": false,
+    "questionId": "5509e0f1-9169-4076-9056-6a2c79c6fd1d",
+    "id": "98774d5c-e4dc-4c56-9bd3-8ee8b2e3760c"
+  },
+  {
+    "text": "d",
+    "isTrue": false,
+    "questionId": "5509e0f1-9169-4076-9056-6a2c79c6fd1d",
+    "id": "8bc3c545-38d5-4750-8f99-024f4e9ad653"
+  }
+]
