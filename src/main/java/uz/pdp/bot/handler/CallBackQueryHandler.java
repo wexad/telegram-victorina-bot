@@ -1,27 +1,28 @@
 package uz.pdp.bot.handler;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
-import com.pengrad.telegrambot.model.InlineQuery;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.question.Question;
-import uz.pdp.backend.model.answer.Answer;
+import uz.pdp.backend.service.answer_service.AnswerService;
+import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.collection_service.CollectionServiceImpl;
 import uz.pdp.backend.service.question_service.QuestionService;
 import uz.pdp.backend.service.question_service.QuestionServiceImpl;
 import uz.pdp.backend.service.user_service.UserService;
 import uz.pdp.backend.service.user_service.UserServiceImpl;
-import uz.pdp.backend.service.answer_service.AnswerService;
-import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
+import uz.pdp.bean.BeanController;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CallBackQueryHandler extends BaseHandler {
 
@@ -42,21 +43,33 @@ public class CallBackQueryHandler extends BaseHandler {
 
         System.out.println(myUser.getUserName() + " : " + data);
 
+        if (myUser.getBaseState().equals(BaseState.MY_COLLECTIONS.toString())) {
+
+        }
+
+        if (Objects.equals(myUser.getSubState(), CreateCollectionState.CREATE_OR_ANOTHER.toString())) {
+            switch (data) {
+
+                case "ADD_QUESTION" -> {
+                    myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
+                    userService.update(myUser);
+                    sendText(myUser.getChatId(), "Enter question please : ");
+                }
+
+                case "FINISH_COLLECTION" -> {
+                    Collection lastCollection = collectionService.getLastCollectionUser(myUser);
+                    lastCollection.setIsFinished(true);
+                    collectionService.update(lastCollection);
+                    myUser.setBaseState(BaseState.MAIN_STATE.toString());
+                    myUser.setSubState(null);
+                    userService.update(myUser);
+                    sendText(myUser.getChatId(), "Collection build successfully! ");
+                    BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().showMainMenu();
+                }
+            }
+        }
+
         switch (data) {
-            case "ADD_QUESTION" -> {
-                myUser.setSubState(CreateCollectionState.ENTER_QUESTION.toString());
-                userService.update(myUser);
-            }
-
-            case "FINISH_COLLECTION" -> {
-                Collection lastCollection = collectionService.getLastCollectionUser(myUser);
-                lastCollection.setIsFinished(true);
-                collectionService.update(lastCollection);
-                myUser.setBaseState(BaseState.MAIN_STATE.toString());
-                myUser.setSubState(null);
-                userService.update(myUser);
-
-            }
 
             case "SHOW_COLLECTIONS" -> {
                 List<Collection> userCollections = collectionService.getUserCollections(myUser);
@@ -75,10 +88,10 @@ public class CallBackQueryHandler extends BaseHandler {
             }
         }
 
-//        Collection collection = collectionService.getCollectionByName(data);
-//        if (collection != null) {
-//            showCollection(collection, myUser);
-//        }
+        Collection collection = collectionService.getCollectionByName(data);
+        if (collection != null) {
+            showCollection(collection, myUser);
+        }
 
     }
 
