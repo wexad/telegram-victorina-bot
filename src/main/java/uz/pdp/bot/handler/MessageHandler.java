@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageHandler extends BaseHandler {
 
@@ -129,21 +130,50 @@ public class MessageHandler extends BaseHandler {
                         Game game = gameService.getGameOfCurrent(myGroup.getChatId());
 
                         String collectionId = game.getCollectionId();
-
+//
                         Collection collection = collectionService.getCollectionById(collectionId);
 
                         List<Question> questions = questionService.getQuestionsByCollectionId(collectionId);
-
-                        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-
-
-                        scheduledExecutorService.scheduleWithFixedDelay(() -> {
-                            SendPoll sendPoll = new SendPoll(myGroup.getChatId(), questions.get(0).getText(), answerService.getOptionsByQuestionId(questions.get(0).getId()));
-                        }, 1, game.getTimeForQuiz(), TimeUnit.SECONDS);
+//
+//                        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+//
+//
+//                        scheduledExecutorService.scheduleWithFixedDelay(() -> {
+//                            SendPoll sendPoll = new SendPoll(myGroup.getChatId(), questions.get(0).getText(), answerService.getOptionsByQuestionId(questions.get(0).getId()));
+//                        }, 1, game.getTimeForQuiz(), TimeUnit.SECONDS);
+                        executePolls(game, questions);
                     }
                 }
             }
         }
+    }
+
+    private void executePolls(Game game, List<Question> questions) {
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        AtomicInteger questionIndex = new AtomicInteger(0); // To keep track of the current question index
+
+        scheduledExecutorService.scheduleWithFixedDelay(() -> {
+            // Get the current question index
+            int currentIndex = questionIndex.getAndIncrement();
+
+            // Ensure currentIndex stays within bounds
+            currentIndex %= questions.size();
+
+            // Fetch the current question and its options
+            Question currentQuestion = questions.get(currentIndex);
+            String[] options = answerService.getOptionsByQuestionId(currentQuestion.getId());
+
+            // Create and send the poll
+            SendPoll sendPoll = new SendPoll(myGroup.getChatId(), currentQuestion.getText(), options);
+            // Call a method to send the poll to the Telegram group
+            sendPollToGroup(sendPoll);
+
+        }, 1, game.getTimeForQuiz(), TimeUnit.SECONDS);
+
+    }
+
+    private void sendPollToGroup(SendPoll sendPoll) {
+        bot.execute(sendPoll);
     }
 
     private void showCollections(List<Collection> userCollections) {
