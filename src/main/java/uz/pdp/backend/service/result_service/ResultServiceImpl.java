@@ -26,7 +26,6 @@ public class ResultServiceImpl implements ResultService {
         for (int i = 0; i < results.size(); i++) {
             if (Objects.equals(result.getId(),results.get(i))) {
                 results.set(i, result);
-                return;
             }
         }
         fileManager.write(results,Result.class);

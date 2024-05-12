@@ -10,9 +10,9 @@ import java.util.Objects;
 
 public class CollectionServiceImpl implements CollectionService {
 
-    private static CollectionService collectionService;
+    private static CollectionServiceImpl collectionService;
 
-    public static CollectionService getInstance() {
+    public static CollectionServiceImpl getInstance() {
         return collectionService == null ? new CollectionServiceImpl() : collectionService;
     }
 
@@ -56,6 +56,18 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    public void update(Collection collection) {
+        List<Collection> collections = fileManager.load(Collection.class);
+        for (int i = 0; i < collections.size(); i++) {
+            if (Objects.equals(collection.getId(),collections.get(i).getId())) {
+                collections.set(i, collection);
+            }
+        }
+        fileManager.write(collections, Collection.class);
+
+    }
+
+    @Override
     public Collection getLastCollectionUser(BotUser myUser) {
         List<Collection> collections = fileManager.load(Collection.class);
         for (Collection collection : collections) {
@@ -75,17 +87,5 @@ public class CollectionServiceImpl implements CollectionService {
             }
         }
         return null;
-    }
-
-    @Override
-    public void update(Collection collection) {
-        List<Collection> collections = fileManager.load(Collection.class);
-        for (int i = 0; i < collections.size(); i++) {
-            if (Objects.equals(collection.getId(), collections.get(i).getId())) {
-                collections.set(i, collection);
-                return;
-            }
-        }
-        fileManager.write(collections, Collection.class);
     }
 }

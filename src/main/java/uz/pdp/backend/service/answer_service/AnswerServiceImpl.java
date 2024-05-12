@@ -61,5 +61,6 @@ public class AnswerServiceImpl implements AnswerService {
                 answers.set(i, answer);
             }
         }
+        fileManager.write(answers, Answer.class);
     }
 }

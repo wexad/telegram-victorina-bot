@@ -25,7 +25,6 @@ public class GameServiceImpl implements GameService {
         for (int i = 0; i < games.size(); i++) {
             if (Objects.equals(games.get(i).getId(), game.getId())) {
                 games.set(i,game);
-                return;
             }
         }
         fileManager.write(games, Game.class);

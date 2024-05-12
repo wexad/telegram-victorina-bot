@@ -25,7 +25,6 @@ public class PollBackServiceImpl implements PollBackService {
         for (int i = 0; i < pollBacks.size(); i++) {
             if (Objects.equals(pollBack.getId(), pollBacks.get(i).getId())) {
                 pollBacks.set(i, pollBack);
-                return;
             }
         }
         fileManager.write(pollBacks, PollBack.class);

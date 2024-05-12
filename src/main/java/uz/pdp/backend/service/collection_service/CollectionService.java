@@ -13,6 +13,7 @@ public interface CollectionService extends BaseService<Collection> {
     Collection getCollectionByName(String name);
 
     void add(Collection collection);
+    void update(Collection collection);
 
     Collection getLastCollectionUser(BotUser myUser);
 

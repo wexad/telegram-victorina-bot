@@ -11,9 +11,11 @@ public class GroupServiceImpl implements GroupService {
 
     private static GroupService groupService;
     private final FileManager<Group> fileManager;
+
     public GroupServiceImpl() {
         this.fileManager = new FileManager<>("src/main/resources/groups.txt");
     }
+
     public static GroupService getInstance() {
         return groupService == null ? new GroupServiceImpl() : groupService;
     }
@@ -22,9 +24,8 @@ public class GroupServiceImpl implements GroupService {
     public void update(Group group) {
         List<Group> groups = fileManager.load(Group.class);
         for (int i = 0; i < groups.size(); i++) {
-            if (Objects.equals(group, groups.get(i).getId())) {
+            if (Objects.equals(group.getId(), groups.get(i).getId())) {
                 groups.set(i, group);
-                return;
             }
         }
         fileManager.write(groups, Group.class);
