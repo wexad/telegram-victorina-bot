@@ -6,18 +6,9 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
-import org.jetbrains.annotations.NotNull;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.question.Question;
-import uz.pdp.backend.service.answer_service.AnswerService;
-import uz.pdp.backend.service.answer_service.AnswerServiceImpl;
-import uz.pdp.backend.service.collection_service.CollectionService;
-import uz.pdp.backend.service.collection_service.CollectionServiceImpl;
-import uz.pdp.backend.service.question_service.QuestionService;
-import uz.pdp.backend.service.question_service.QuestionServiceImpl;
-import uz.pdp.backend.service.user_service.UserService;
-import uz.pdp.backend.service.user_service.UserServiceImpl;
 import uz.pdp.bean.BeanController;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
@@ -26,14 +17,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class CallBackQueryHandler extends BaseHandler {
-
-    private final UserService userService = UserServiceImpl.getInstance();
-
-    private final CollectionService collectionService = CollectionServiceImpl.getInstance();
-
-    private final QuestionService questionService = QuestionServiceImpl.getInstance();
-
-    private final AnswerService answerService = AnswerServiceImpl.getInstance();
 
     @Override
     public void handle(Update update) {

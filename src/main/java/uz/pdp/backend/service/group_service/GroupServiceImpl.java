@@ -20,4 +20,9 @@ public class GroupServiceImpl implements GroupService {
     public void add(Group group) {
 
     }
+
+    @Override
+    public Group getById(Long id) {
+        return null;
+    }
 }
