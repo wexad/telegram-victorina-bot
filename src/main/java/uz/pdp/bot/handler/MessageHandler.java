@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
+import uz.pdp.backend.model.game.Game;
 import uz.pdp.backend.model.question.Question;
 import uz.pdp.bean.BeanController;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
@@ -90,23 +91,49 @@ public class MessageHandler extends BaseHandler {
             } else if (isFromGroup(chat)) {
                 myGroup = getGroupOrCreate(message.chat());
 
-                if (text.equals("/play")) {
-                    System.out.println("Enter /play");
-                    if (!gameService.hasGame(myGroup.getChatId())) {
-                        System.out.println("Create a game");
-                        List<Collection> userCollections = collectionService.getUserCollections(myUser);
+                switch (myUser.getBaseState()) {
+                    case "MAIN_STATE" -> {
+                        if (text.equals("/play")) {
+                            System.out.println("Enter /play");
+                            if (!gameService.hasGame(myGroup.getChatId())) {
+                                System.out.println("Create a game");
+                                List<Collection> userCollections = collectionService.getUserCollections(myUser);
 
-                        if (userCollections.isEmpty()) {
-                            sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
-                        } else {
-                            BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().showCollections(userCollections);
+                                if (userCollections.isEmpty()) {
+                                    sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
+                                } else {
+                                    BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().showCollections(userCollections);
 
-                            myUser.setBaseState(BaseState.GAME.toString());
-                            myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
-                            userService.update(myUser);
+                                    myUser.setBaseState(BaseState.GAME.toString());
+                                    myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
+                                    userService.update(myUser);
+                                }
+                            }
+                        }
+                    }
+
+                    case "GAME" -> {
+                        if (myUser.getSubState().equals(GameState.GAME_CREATING.toString())) {
+                            System.out.println("Enter to game");
+
+                            Game game = gameService.getGameOfCurrent(myGroup.getChatId());
+                            int time = 15;
+                            try {
+                                time = Integer.parseInt(text);
+                            } catch (NumberFormatException n) {
+                                sendText(myUser.getChatId(), "Entered wrong format. Time was automatically set 15 seconds! ");
+                            } finally {
+                                game.setTimeForQuiz(time);
+
+                                myUser.setSubState(GameState.QUIZ_TIME.toString());
+                                userService.update(myUser);
+
+                                gameService.update(game);
+                            }
                         }
                     }
                 }
+
             }
         }
     }

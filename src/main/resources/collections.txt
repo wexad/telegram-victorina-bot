@@ -1,8 +1,0 @@
-[
-  {
-    "name": "Math",
-    "userName": "wexad",
-    "isFinished": true,
-    "id": "935ff479-3437-4d65-a3bf-d18918f999f7"
-  }
-]

@@ -34,6 +34,8 @@ public class CallBackQueryHandler extends BaseHandler {
                 Collection collectionByName = collectionService.getCollectionByName(data);
                 if (collectionByName != null) {
                     showCollection(collectionByName);
+
+                    BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().showMainMenu();
                 }
             }
 
@@ -116,8 +118,6 @@ public class CallBackQueryHandler extends BaseHandler {
         sendText(myUser.getChatId(), stringBuilder.toString());
         myUser.setBaseState(BaseState.MAIN_STATE.toString());
         userService.update(myUser);
-
-        BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().showMainMenu();
     }
 
     public void showCollections(List<Collection> userCollections) {
