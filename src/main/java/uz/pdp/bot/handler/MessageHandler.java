@@ -87,55 +87,59 @@ public class MessageHandler extends BaseHandler {
                             }
                         }
                     }
-                }
-            } else if (isFromGroup(chat)) {
-                myGroup = getGroupOrCreate(message.chat());
-
-                switch (myUser.getBaseState()) {
-                    case "MAIN_STATE" -> {
-                        if (text.equals("/play")) {
-                            System.out.println("Enter /play");
-                            if (!gameService.hasGame(myGroup.getChatId())) {
-                                System.out.println("Create a game");
-                                List<Collection> userCollections = collectionService.getUserCollections(myUser);
-
-                                if (userCollections.isEmpty()) {
-                                    sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
-                                } else {
-                                    BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().showCollections(userCollections);
-
-                                    myUser.setBaseState(BaseState.GAME.toString());
-                                    myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
-                                    userService.update(myUser);
-                                }
-                            }
-                        }
-                    }
-
                     case "GAME" -> {
                         if (myUser.getSubState().equals(GameState.GAME_CREATING.toString())) {
                             System.out.println("Enter to game");
 
                             Game game = gameService.getGameOfCurrent(myGroup.getChatId());
-                            int time = 15;
-                            try {
+                            int time = 30;
+                            if (isNum(text)) {
                                 time = Integer.parseInt(text);
-                            } catch (NumberFormatException n) {
+                            } else {
                                 sendText(myUser.getChatId(), "Entered wrong format. Time was automatically set 15 seconds! ");
-                            } finally {
-                                game.setTimeForQuiz(time);
+                            }
+                            game.setTimeForQuiz(time);
 
-                                myUser.setSubState(GameState.QUIZ_TIME.toString());
+                            myUser.setSubState(GameState.QUIZ_TIME.toString());
+                            userService.update(myUser);
+                            gameService.update(game);
+
+                            sendText(myGroup.getChatId(), "Game started! ");
+                        }
+                    }
+                }
+            } else if (isFromGroup(chat)) {
+                myGroup = getGroupOrCreate(message.chat());
+
+                if (myUser.getBaseState().equals("MAIN_STATE")) {
+                    if (text.equals("/play")) {
+                        if (!gameService.hasGame(myGroup.getChatId())) {
+                            System.out.println("Create a game");
+                            List<Collection> userCollections = collectionService.getUserCollections(myUser);
+
+                            if (userCollections.isEmpty()) {
+                                sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
+                            } else {
+                                BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().showCollections(userCollections);
+
+                                myUser.setBaseState(BaseState.GAME.toString());
+                                myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
                                 userService.update(myUser);
-
-                                gameService.update(game);
                             }
                         }
                     }
                 }
-
             }
         }
+    }
+
+    private boolean isNum(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            if (!Character.isDigit(text.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isFromGroup(Chat chat) {

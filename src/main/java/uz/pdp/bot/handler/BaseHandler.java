@@ -7,16 +7,15 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import uz.pdp.backend.model.bot_user.BotUser;
 import uz.pdp.backend.model.group.Group;
+import uz.pdp.backend.service.answer_service.AnswerService;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.game_service.GameService;
 import uz.pdp.backend.service.group_service.GroupService;
 import uz.pdp.backend.service.question_service.QuestionService;
 import uz.pdp.backend.service.result_service.ResultService;
 import uz.pdp.backend.service.user_service.UserService;
-import uz.pdp.backend.service.answer_service.AnswerService;
 import uz.pdp.bean.BeanController;
 import uz.pdp.bot.Main;
-import uz.pdp.bot.enums.bot_state.base.BaseState;
 
 public abstract class BaseHandler {
 
@@ -52,6 +51,7 @@ public abstract class BaseHandler {
                     .chatId(chat.id())
                     .userName(chat.username())
                     .build();
+            groupService.add(myGroup);
         }
 
         return myGroup;

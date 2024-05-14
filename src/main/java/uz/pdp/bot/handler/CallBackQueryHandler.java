@@ -44,15 +44,14 @@ public class CallBackQueryHandler extends BaseHandler {
                 if (collection != null) {
                     System.out.println("Choose collection");
                     showCollection(collection);
+
+                    Game game = new Game(myGroup.getChatId(), collection.getId(), null, false);
+
                     sendText(myUser.getChatId(), "Please send time for each quiz in seconds : ");
                     myUser.setBaseState(BaseState.GAME.toString());
                     myUser.setSubState(GameState.GAME_CREATING.toString());
                     userService.update(myUser);
-
-                    Game game = new Game(myGroup.getChatId(), collection.getId(), null, false);
-
                     gameService.add(game);
-                    gameService.update(game);
                 }
             }
         }
