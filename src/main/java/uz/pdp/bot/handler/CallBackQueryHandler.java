@@ -38,15 +38,16 @@ public class CallBackQueryHandler extends BaseHandler {
             }
 
             case "GAME" -> {
-                Collection collectionByName = collectionService.getCollectionByName(data);
-                if (collectionByName != null) {
-                    showCollection(collectionByName);
+                Collection collection = collectionService.getCollectionByName(data);
+                if (collection != null) {
+                    System.out.println("Choose collection");
+                    showCollection(collection);
                     sendText(myUser.getChatId(), "Please send time for each quiz in seconds : ");
                     myUser.setBaseState(BaseState.GAME.toString());
                     myUser.setSubState(GameState.GAME_CREATING.toString());
                     userService.update(myUser);
 
-                    Game game = new Game(myGroup.getChatId(), collectionByName.getId(), null, false);
+                    Game game = new Game(myGroup.getChatId(), collection.getId(), null, false);
 
                     gameService.add(game);
                     gameService.update(game);

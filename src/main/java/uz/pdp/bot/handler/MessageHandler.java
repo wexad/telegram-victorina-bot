@@ -87,12 +87,13 @@ public class MessageHandler extends BaseHandler {
                         }
                     }
                 }
-            } else if (chat.type().equals(Chat.Type.supergroup) || chat.type().equals(Chat.Type.group)) {
+            } else if (isFromGroup(chat)) {
                 myGroup = getGroupOrCreate(message.chat());
 
                 if (text.equals("/play")) {
+                    System.out.println("Enter /play");
                     if (!gameService.hasGame(myGroup.getChatId())) {
-
+                        System.out.println("Create a game");
                         List<Collection> userCollections = collectionService.getUserCollections(myUser);
 
                         if (userCollections.isEmpty()) {
@@ -108,6 +109,10 @@ public class MessageHandler extends BaseHandler {
                 }
             }
         }
+    }
+
+    private static boolean isFromGroup(Chat chat) {
+        return chat.type().equals(Chat.Type.supergroup) || chat.type().equals(Chat.Type.group);
     }
 
 

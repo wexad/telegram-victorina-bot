@@ -2,9 +2,7 @@ package uz.pdp.backend.service.game_service;
 
 import uz.pdp.backend.file_manager.FileManager;
 import uz.pdp.backend.model.game.Game;
-import uz.pdp.backend.model.group.Group;
 
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
