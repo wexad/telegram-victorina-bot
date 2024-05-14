@@ -1,14 +1,8 @@
 [
   {
-    "name": "IT",
-    "userName": "SaidKamol1912",
-    "isFinished": false,
-    "id": "c4c30dbf-dc1c-42a9-aa37-b7deb4cb7ac0"
-  },
-  {
-    "name": "A",
-    "userName": "SaidKamol1912",
-    "isFinished": false,
-    "id": "76942b8b-4c3d-4465-9959-fffa64526d14"
+    "name": "Math",
+    "userName": "wexad",
+    "isFinished": true,
+    "id": "935ff479-3437-4d65-a3bf-d18918f999f7"
   }
 ]

@@ -11,6 +11,7 @@ import java.util.Objects;
 public class GameServiceImpl implements GameService {
     private static GameService gameService;
     private final FileManager<Game> fileManager;
+
     public GameServiceImpl() {
         this.fileManager = new FileManager<>("src/main/resources/games.txt");
     }
@@ -24,7 +25,7 @@ public class GameServiceImpl implements GameService {
         List<Game> games = fileManager.load(Game.class);
         for (int i = 0; i < games.size(); i++) {
             if (Objects.equals(games.get(i).getId(), game.getId())) {
-                games.set(i,game);
+                games.set(i, game);
             }
         }
         fileManager.write(games, Game.class);
@@ -34,7 +35,7 @@ public class GameServiceImpl implements GameService {
     public void add(Game game) {
         List<Game> games = fileManager.load(Game.class);
         games.add(game);
-        fileManager.write(games,Game.class);
+        fileManager.write(games, Game.class);
     }
 
     @Override
@@ -52,10 +53,23 @@ public class GameServiceImpl implements GameService {
     public Game getGameOfCurrent(Long chatId) {
         List<Game> games = fileManager.load(Game.class);
         for (Game game : games) {
-            if (!game.getIsActive() && Objects.equals(game.getGroupId(),chatId)) {
+            if (!game.getIsActive() && Objects.equals(game.getGroupId(), chatId)) {
                 return game;
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean hasGame(Long chatId) {
+        List<Game> games = fileManager.load(Game.class);
+
+        for (Game game : games) {
+            if (game.getIsActive() && game.getGroupId().equals(chatId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

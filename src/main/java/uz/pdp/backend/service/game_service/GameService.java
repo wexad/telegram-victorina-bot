@@ -7,4 +7,6 @@ public interface GameService extends BaseService<Game> {
     Game getGameWithNullTime();
 
     Game getGameOfCurrent(Long chatId);
+
+    boolean hasGame(Long chatId);
 }

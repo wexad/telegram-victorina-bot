@@ -7,21 +7,16 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.request.SendPoll;
-import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
-import uz.pdp.backend.model.game.Game;
 import uz.pdp.backend.model.question.Question;
+import uz.pdp.bean.BeanController;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 import uz.pdp.bot.enums.bot_state.child.GameState;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class MessageHandler extends BaseHandler {
 
@@ -42,7 +37,6 @@ public class MessageHandler extends BaseHandler {
             }
 
             if (isFromBot(message)) {
-
                 System.out.println(myUser.getBaseState());
                 switch (myUser.getBaseState()) {
                     case "MAIN_STATE" -> showMainMenu();
@@ -92,18 +86,23 @@ public class MessageHandler extends BaseHandler {
                             }
                         }
                     }
+                }
+            } else if (chat.type().equals(Chat.Type.supergroup) || chat.type().equals(Chat.Type.group)) {
+                myGroup = getGroupOrCreate(message.chat());
 
-                    case "GAME" -> {
-                        if (myUser.getSubState().equals(GameState.GAME_CREATING.toString())) {
-                            Game game = gameService.getGameWithNullTime();
-                            game.setTimeForQuiz(Integer.parseInt(text));
-                            game.setIsActive(true);
+                if (text.equals("/play")) {
+                    if (!gameService.hasGame(myGroup.getChatId())) {
 
-                            gameService.update(game);
+                        List<Collection> userCollections = collectionService.getUserCollections(myUser);
 
-                            myUser.setSubState(GameState.QUIZ_TIME.toString());
+                        if (userCollections.isEmpty()) {
+                            sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
+                        } else {
+                            BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().showCollections(userCollections);
 
-                            sendText(myGroup.getChatId(), "Please send to group command /begin ");
+                            myUser.setBaseState(BaseState.GAME.toString());
+                            myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
+                            userService.update(myUser);
                         }
                     }
                 }
