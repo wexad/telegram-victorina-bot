@@ -1,12 +1,10 @@
 package uz.pdp.bot.handler;
 
-import com.pengrad.telegrambot.model.Chat;
-import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.User;
+import com.pengrad.telegrambot.model.*;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendPoll;
 import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
@@ -19,6 +17,10 @@ import uz.pdp.bot.enums.bot_state.child.GameState;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageHandler extends BaseHandler {
 
@@ -105,6 +107,7 @@ public class MessageHandler extends BaseHandler {
                             userService.update(myUser);
                             System.out.println("finish");
                             sendText(game.getGroupId(), "Game started! ");
+                            sendPolls(game);
                         }
                     }
                 }
@@ -130,6 +133,31 @@ public class MessageHandler extends BaseHandler {
                 }
             }
         }
+    }
+
+    private void sendPolls(Game game) {
+        Collection collection = collectionService.getCollectionById(game.getCollectionId());
+        List<Question> questions = questionService.getQuestionsByCollectionId(collection.getId());
+        AtomicInteger current = new AtomicInteger(0);
+        ScheduledExecutorService pool = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+        pool.scheduleAtFixedRate(() -> {
+            if (questions.size() > current.get()) {
+                Question question = questions.get(current.get());
+                String[] answers = answerService.getOptionsByQuestionId(question.getId());
+                SendPoll poll = new SendPoll(game.getGroupId(), question.getText(), answers);
+                poll.type(Poll.Type.quiz);
+                poll.correctOptionId(0);
+                poll.openPeriod(game.getTimeForQuiz());
+                SendResponse response = bot.execute(poll);
+                System.out.println(current.get());
+                current.incrementAndGet();
+                if (response.isOk()) {
+                    System.out.println("OK");
+                } else {
+                    System.out.println("Wrong");
+                }
+            }
+        }, 0, game.getTimeForQuiz(), TimeUnit.SECONDS);
     }
 
     private void showCollectionsForGame(List<Collection> userCollections) {
