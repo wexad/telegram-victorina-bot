@@ -9,4 +9,6 @@ public interface GameService extends BaseService<Game> {
     Game getGameOfCurrent(Long chatId);
 
     boolean hasGame(Long chatId);
+
+    Game getWithoutGroupId();
 }

@@ -1,5 +1,6 @@
 package uz.pdp.backend.service.group_service;
 
+import kotlin.io.OnErrorAction;
 import uz.pdp.backend.file_manager.FileManager;
 import uz.pdp.backend.model.group.Group;
 import uz.pdp.backend.service.game_service.GameService;
@@ -42,7 +43,7 @@ public class GroupServiceImpl implements GroupService {
     public Group getById(Long id) {
         List<Group> groups = fileManager.load(Group.class);
         for (Group group : groups) {
-            if (Objects.equals(group.getId(), id)) {
+            if (Objects.equals(group.getChatId(), id)) {
                 return group;
             }
         }

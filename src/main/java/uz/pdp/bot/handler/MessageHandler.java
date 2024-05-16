@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.game.Game;
@@ -88,10 +89,9 @@ public class MessageHandler extends BaseHandler {
                         }
                     }
                     case "GAME" -> {
-                        if (myUser.getSubState().equals(GameState.GAME_CREATING.toString())) {
+                        if (myUser.getSubState().equals(GameState.CHOOSE_COLLECTION.toString())) {
                             System.out.println("Enter to game");
-
-                            Game game = gameService.getGameOfCurrent(myGroup.getChatId());
+                            Game game = gameService.getGameWithNullTime();
                             int time = 30;
                             if (isNum(text)) {
                                 time = Integer.parseInt(text);
@@ -99,12 +99,12 @@ public class MessageHandler extends BaseHandler {
                                 sendText(myUser.getChatId(), "Entered wrong format. Time was automatically set 15 seconds! ");
                             }
                             game.setTimeForQuiz(time);
-
+                            game.setIsActive(true);
+                            gameService.update(game);
                             myUser.setSubState(GameState.QUIZ_TIME.toString());
                             userService.update(myUser);
-                            gameService.update(game);
-
-                            sendText(myGroup.getChatId(), "Game started! ");
+                            System.out.println("finish");
+                            sendText(game.getGroupId(), "Game started! ");
                         }
                     }
                 }
@@ -114,14 +114,13 @@ public class MessageHandler extends BaseHandler {
                 if (myUser.getBaseState().equals("MAIN_STATE")) {
                     if (text.equals("/play")) {
                         if (!gameService.hasGame(myGroup.getChatId())) {
-                            System.out.println("Create a game");
                             List<Collection> userCollections = collectionService.getUserCollections(myUser);
 
                             if (userCollections.isEmpty()) {
                                 sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
                             } else {
-                                BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().showCollections(userCollections);
-
+                                showCollectionsForGame(userCollections);
+                                gameService.add(new Game(myGroup.getChatId(),null,null,false));
                                 myUser.setBaseState(BaseState.GAME.toString());
                                 myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
                                 userService.update(myUser);
@@ -133,6 +132,27 @@ public class MessageHandler extends BaseHandler {
         }
     }
 
+    private void showCollectionsForGame(List<Collection> userCollections) {
+        SendMessage showCollections = getSendMessage(userCollections);
+        SendResponse execute = bot.execute(showCollections);
+        if (execute.isOk()) {
+            System.out.println("Sent!");
+        } else {
+            System.out.println("Something wrong! ");
+        }
+    }
+
+    private SendMessage getSendMessage(List<Collection> userCollections) {
+        SendMessage showCollections = new SendMessage(myUser.getChatId(), "Your collections : ");
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        for (Collection userCollection : userCollections) {
+            InlineKeyboardButton button = new InlineKeyboardButton(userCollection.getName());
+            button.callbackData(userCollection.getName());
+            inlineKeyboardMarkup.addRow(button);
+        }
+        showCollections.replyMarkup(inlineKeyboardMarkup);
+        return showCollections;
+    }
     private boolean isNum(String text) {
         for (int i = 0; i < text.length(); i++) {
             if (!Character.isDigit(text.charAt(i))) {
@@ -143,10 +163,13 @@ public class MessageHandler extends BaseHandler {
     }
 
     private static boolean isFromGroup(Chat chat) {
-        return chat.type().equals(Chat.Type.supergroup) || chat.type().equals(Chat.Type.group);
+        Chat.Type type = chat.type();
+        return type.equals(Chat.Type.supergroup) || type.equals(Chat.Type.group);
     }
 
-
+    private boolean isFromGroup(Message message){
+        return message.chat().type().equals(Chat.Type.supergroup) || message.chat().type().equals(Chat.Type.group);
+    }
     private boolean isFromBot(Message message) {
         return message.chat().type().equals(Chat.Type.Private);
     }

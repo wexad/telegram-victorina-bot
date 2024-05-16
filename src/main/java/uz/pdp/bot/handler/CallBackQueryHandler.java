@@ -40,18 +40,19 @@ public class CallBackQueryHandler extends BaseHandler {
             }
 
             case "GAME" -> {
-                Collection collection = collectionService.getCollectionByName(data);
-                if (collection != null) {
-                    System.out.println("Choose collection");
-                    showCollection(collection);
-
-                    Game game = new Game(myGroup.getChatId(), collection.getId(), null, false);
-
-                    sendText(myUser.getChatId(), "Please send time for each quiz in seconds : ");
-                    myUser.setBaseState(BaseState.GAME.toString());
-                    myUser.setSubState(GameState.GAME_CREATING.toString());
-                    userService.update(myUser);
-                    gameService.add(game);
+                if (Objects.equals(GameState.CHOOSE_COLLECTION.toString(), myUser.getSubState())) {
+                    Collection collection = collectionService.getCollectionByName(data);
+                    if (collection != null) {
+                        System.out.println("Choose collection");
+                        showCollectionForGame(collection);
+                        userService.update(myUser);
+                        Game game = gameService.getWithoutGroupId();
+                        game.setCollectionId(collection.getId());
+                        gameService.update(game);
+                        sendText(myUser.getChatId(), "Please send time for each quiz in seconds : ");
+                        myUser.setBaseState(BaseState.GAME.toString());
+                        myUser.setSubState(GameState.GAME_CREATING.toString());
+                    }
                 }
             }
         }
@@ -99,6 +100,25 @@ public class CallBackQueryHandler extends BaseHandler {
         }
     }
 
+    private void showCollectionForGame(Collection collection) {
+        StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName() + "\n");
+        List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
+
+        int count = 1;
+        for (Question question : questionsByCollectionId) {
+            stringBuilder.append("\n").append("Question ").append(count++).append(" : ").append(question.getText());
+            List<Answer> variationsByQuestionId = answerService.getAnswersByQuestionId(question.getId());
+            int count1 = 1;
+            for (Answer variation : variationsByQuestionId) {
+                stringBuilder.append("\n").append("Answer ").append(count1++).append(" : ").append(variation.getText());
+            }
+            stringBuilder.append("\n");
+        }
+
+        sendText(myUser.getChatId(), stringBuilder.toString());
+
+    }
+
     private void showCollection(Collection collection) {
         StringBuilder stringBuilder = new StringBuilder("Collection : " + collection.getName() + "\n");
         List<Question> questionsByCollectionId = questionService.getQuestionsByCollectionId(collection.getId());
@@ -144,4 +164,5 @@ public class CallBackQueryHandler extends BaseHandler {
         showCollections.replyMarkup(inlineKeyboardMarkup);
         return showCollections;
     }
+
 }

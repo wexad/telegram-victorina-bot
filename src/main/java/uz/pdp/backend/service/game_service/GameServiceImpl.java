@@ -31,9 +31,13 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void add(Game game) {
+        try {
         List<Game> games = fileManager.load(Game.class);
         games.add(game);
         fileManager.write(games, Game.class);
+        } catch (Exception o) {
+            throw o;
+        }
     }
 
     @Override
@@ -49,8 +53,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game getGameOfCurrent(Long chatId) {
+        System.out.println("ali");
         List<Game> games = fileManager.load(Game.class);
         for (Game game : games) {
+            System.out.println(game.getIsActive() + "  " + game.getGroupId() + "  " + chatId );
             if (!game.getIsActive() && Objects.equals(game.getGroupId(), chatId)) {
                 return game;
             }
@@ -69,5 +75,18 @@ public class GameServiceImpl implements GameService {
         }
 
         return false;
+    }
+
+    @Override
+    public Game getWithoutGroupId() {
+        List<Game> games = fileManager.load(Game.class);
+        for (Game game : games) {
+            if (!game.getIsActive()
+                    && Objects.isNull(game.getCollectionId())
+                    && Objects.isNull(game.getTimeForQuiz())) {
+                return game;
+            }
+        }
+        return null;
     }
 }
