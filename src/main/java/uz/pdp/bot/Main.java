@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    public static final String BOT_TOKEN = "6947319127:AAGNSbKWP1gWCYbKTbZ78OUDFu4FKmHVkLU";
+    public static final String BOT_TOKEN = "6967161720:AAHruHzw1jD3g0PgpL8akuf3NizFrXCJels";
 
     public static final ThreadLocal<BotManager> BOT_MAIN_HANDLER_THREAD_LOCAL = ThreadLocal.withInitial(BotManager::new);
 

@@ -1,0 +1,29 @@
+[
+  {
+    "groupId": -1002116056010,
+    "collectionId": "8bcedace-b8ad-47d3-a74f-dc7bf821864e",
+    "timeForQuiz": 30,
+    "isActive": false,
+    "id": "8cbf8fea-6720-4af6-8d00-337141461e5e"
+  },
+  {
+    "groupId": -1002116056010,
+    "collectionId": "8bcedace-b8ad-47d3-a74f-dc7bf821864e",
+    "timeForQuiz": 30,
+    "isActive": false,
+    "id": "82a29cda-a049-46d6-8331-bc8103a94521"
+  },
+  {
+    "groupId": -1002116056010,
+    "collectionId": "8bcedace-b8ad-47d3-a74f-dc7bf821864e",
+    "timeForQuiz": 20,
+    "isActive": false,
+    "id": "b28d57db-d8ae-4020-8c30-1e7068268763"
+  },
+  {
+    "groupId": -1002116056010,
+    "collectionId": "8bcedace-b8ad-47d3-a74f-dc7bf821864e",
+    "isActive": false,
+    "id": "8688aa5e-83d4-44ee-ae9f-c52fe4850f3c"
+  }
+]

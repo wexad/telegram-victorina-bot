@@ -26,6 +26,7 @@ public class CallBackQueryHandler extends BaseHandler {
         String data = callbackQuery.data();
 
         myUser = getUserOrCreate(callbackQuery.from());
+        
 
         System.out.println(myUser.getUserName() + " : " + data);
 

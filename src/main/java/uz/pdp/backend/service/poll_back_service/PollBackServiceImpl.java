@@ -36,4 +36,16 @@ public class PollBackServiceImpl implements PollBackService {
         pollBacks.add(pollBack);
         fileManager.write(pollBacks, PollBack.class);
     }
+
+    @Override
+    public PollBack getById(String pollId) {
+        List<PollBack> pollBacks = fileManager.load(PollBack.class);
+        for (PollBack pollBack : pollBacks) {
+            if (pollBack.getPollId().equals(pollId)) {
+                return pollBack;
+            }
+        }
+        fileManager.write(pollBacks, PollBack.class);
+        return null;
+    }
 }

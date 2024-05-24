@@ -13,8 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class PollBack extends BaseModel implements Serializable {
-    private Long polId;
+    private String pollId;
     private Long chatId;
-    private String username;
     private Integer trueIndex;
 }

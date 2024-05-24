@@ -9,12 +9,15 @@ import com.pengrad.telegrambot.response.SendResponse;
 import uz.pdp.backend.model.answer.Answer;
 import uz.pdp.backend.model.collection.Collection;
 import uz.pdp.backend.model.game.Game;
+import uz.pdp.backend.model.poll_back.PollBack;
 import uz.pdp.backend.model.question.Question;
-import uz.pdp.bean.BeanController;
+import uz.pdp.backend.model.result.Result;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 import uz.pdp.bot.enums.bot_state.child.GameState;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -123,7 +126,7 @@ public class MessageHandler extends BaseHandler {
                                 sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
                             } else {
                                 showCollectionsForGame(userCollections);
-                                gameService.add(new Game(myGroup.getChatId(),null,null,false));
+                                gameService.add(new Game(myGroup.getChatId(), null, null, false));
                                 myUser.setBaseState(BaseState.GAME.toString());
                                 myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
                                 userService.update(myUser);
@@ -151,13 +154,81 @@ public class MessageHandler extends BaseHandler {
                 SendResponse response = bot.execute(poll);
                 System.out.println(current.get());
                 current.incrementAndGet();
+
                 if (response.isOk()) {
                     System.out.println("OK");
                 } else {
                     System.out.println("Wrong");
                 }
+
+                PollBack pollBack = new PollBack(response.message().poll().id(), myGroup.getChatId(), 0);
+
+                pollBackService.add(pollBack);
+                pollBackService.update(pollBack);
+
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                List<Result> results = resultService.getResultsByGroupId(myGroup.getChatId());
+
+                List<Result> winnerTrio = getWinnerTrio(results);
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Game finish! ").append('\n');
+
+                for (int i = 0; i < winnerTrio.size(); i++) {
+                    stringBuilder.append(i + 1).append(". ").append(winnerTrio.get(i).getUsername()).append('\n');
+                }
+                stringBuilder.append("Congratulations! ");
+
+                sendText(myGroup.getChatId(), stringBuilder.toString());
+
+                myUser.setBaseState(BaseState.MAIN_STATE.toString());
+                myUser.setSubState(null);
+                userService.update(myUser);
+
+                game.setIsActive(false);
+                gameService.update(game);
+
+                Thread thread = Thread.currentThread();
+
+                thread.interrupt();
             }
         }, 0, game.getTimeForQuiz(), TimeUnit.SECONDS);
+    }
+
+    private List<Result> getWinnerTrio(List<Result> results) {
+        if (!results.isEmpty()) {
+            List<Result> winners = new ArrayList<>();
+
+            Result winner1 = results.stream()
+                    .max(Comparator.comparing(Result::getCount))
+                    .get();
+            winners.add(winner1);
+            results.remove(winner1);
+
+            if (results.size() > 1) {
+                Result winner2 = results.stream()
+                        .max(Comparator.comparing(Result::getCount))
+                        .get();
+                winners.add(winner2);
+                results.remove(winner2);
+
+                if (results.size() > 2) {
+                    Result winner3 = results.stream()
+                            .max(Comparator.comparing(Result::getCount))
+                            .get();
+                    winners.add(winner3);
+                    results.remove(winner3);
+                }
+            }
+            return winners;
+        }
+
+        return new ArrayList<>();
     }
 
     private void showCollectionsForGame(List<Collection> userCollections) {
@@ -181,6 +252,7 @@ public class MessageHandler extends BaseHandler {
         showCollections.replyMarkup(inlineKeyboardMarkup);
         return showCollections;
     }
+
     private boolean isNum(String text) {
         for (int i = 0; i < text.length(); i++) {
             if (!Character.isDigit(text.charAt(i))) {
@@ -195,9 +267,6 @@ public class MessageHandler extends BaseHandler {
         return type.equals(Chat.Type.supergroup) || type.equals(Chat.Type.group);
     }
 
-    private boolean isFromGroup(Message message){
-        return message.chat().type().equals(Chat.Type.supergroup) || message.chat().type().equals(Chat.Type.group);
-    }
     private boolean isFromBot(Message message) {
         return message.chat().type().equals(Chat.Type.Private);
     }

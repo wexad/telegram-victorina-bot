@@ -11,6 +11,7 @@ import uz.pdp.backend.service.answer_service.AnswerService;
 import uz.pdp.backend.service.collection_service.CollectionService;
 import uz.pdp.backend.service.game_service.GameService;
 import uz.pdp.backend.service.group_service.GroupService;
+import uz.pdp.backend.service.poll_back_service.PollBackService;
 import uz.pdp.backend.service.question_service.QuestionService;
 import uz.pdp.backend.service.result_service.ResultService;
 import uz.pdp.backend.service.user_service.UserService;
@@ -29,6 +30,7 @@ public abstract class BaseHandler {
     protected QuestionService questionService;
     protected ResultService resultService;
     protected AnswerService answerService;
+    protected PollBackService pollBackService;
 
     public BaseHandler() {
         this.bot = new TelegramBot(Main.BOT_TOKEN);
@@ -38,7 +40,8 @@ public abstract class BaseHandler {
         this.groupService = BeanController.GROUP_SERVICE_THREAD_LOCAL.get();
         this.questionService = BeanController.QUESTION_SERVICE_THREAD_LOCAL.get();
         this.resultService = BeanController.RESULT_SERVICE_THREAD_LOCAL.get();
-        this.answerService = BeanController.VARIATION_SERVICE_THREAD_LOCAL.get();
+        this.answerService = BeanController.ANSWER_SERVICE_THREAD_LOCAL.get();
+        this.pollBackService = BeanController.POLL_BACK_SERVICE_THREAD_LOCAL.get();
     }
 
     public abstract void handle(Update update);
