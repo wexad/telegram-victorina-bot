@@ -14,11 +14,13 @@ public class BotManager {
 
         PollAnswer pollAnswer = update.pollAnswer();
 
+        Poll poll = update.poll();
+
         if (Objects.nonNull(message)) {
             BeanController.MESSAGE_HANDLER_THREAD_LOCAL.get().handle(update);
         } else if (Objects.nonNull(callbackQuery)) {
             BeanController.CALL_BACK_QUERY_HANDLER_THREAD_LOCAL.get().handle(update);
-        } else if (Objects.nonNull(pollAnswer)) {
+        } else if (Objects.nonNull(poll)) {
             BeanController.POLL_ANSWER_HANDLER_THREAD_LOCAL.get().handle(update);
         }
     }

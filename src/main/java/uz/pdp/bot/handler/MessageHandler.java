@@ -12,6 +12,7 @@ import uz.pdp.backend.model.game.Game;
 import uz.pdp.backend.model.poll_back.PollBack;
 import uz.pdp.backend.model.question.Question;
 import uz.pdp.backend.model.result.Result;
+import uz.pdp.bot.enums.GameStatus;
 import uz.pdp.bot.enums.bot_state.base.BaseState;
 import uz.pdp.bot.enums.bot_state.child.CreateCollectionState;
 import uz.pdp.bot.enums.bot_state.child.GameState;
@@ -104,7 +105,7 @@ public class MessageHandler extends BaseHandler {
                                 sendText(myUser.getChatId(), "Entered wrong format. Time was automatically set 15 seconds! ");
                             }
                             game.setTimeForQuiz(time);
-                            game.setIsActive(true);
+                            game.setStatus(GameStatus.ACTIVE);
                             gameService.update(game);
                             myUser.setSubState(GameState.QUIZ_TIME.toString());
                             userService.update(myUser);
@@ -126,7 +127,7 @@ public class MessageHandler extends BaseHandler {
                                 sendText(myUser.getChatId(), "You don't have any collection. Please create at least one collection .");
                             } else {
                                 showCollectionsForGame(userCollections);
-                                gameService.add(new Game(myGroup.getChatId(), null, null, false));
+                                gameService.add(new Game(myGroup.getChatId(), null, null, GameStatus.CREATING));
                                 myUser.setBaseState(BaseState.GAME.toString());
                                 myUser.setSubState(GameState.CHOOSE_COLLECTION.toString());
                                 userService.update(myUser);
@@ -177,7 +178,7 @@ public class MessageHandler extends BaseHandler {
                 List<Result> winnerTrio = getWinnerTrio(results);
 
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Game finish! ").append('\n');
+                stringBuilder.append("Game finished! ").append('\n');
 
                 for (int i = 0; i < winnerTrio.size(); i++) {
                     stringBuilder.append(i + 1).append(". ").append(winnerTrio.get(i).getUsername()).append('\n');
@@ -190,7 +191,7 @@ public class MessageHandler extends BaseHandler {
                 myUser.setSubState(null);
                 userService.update(myUser);
 
-                game.setIsActive(false);
+                game.setStatus(GameStatus.FINISHED);
                 gameService.update(game);
 
                 Thread thread = Thread.currentThread();

@@ -1,9 +1,6 @@
 package uz.pdp.bot.handler;
 
-import com.pengrad.telegrambot.model.Chat;
-import com.pengrad.telegrambot.model.PollAnswer;
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.User;
+import com.pengrad.telegrambot.model.*;
 import uz.pdp.backend.model.poll_back.PollBack;
 import uz.pdp.backend.model.result.Result;
 
@@ -12,6 +9,8 @@ import java.util.Objects;
 public class PollAnswerHandler extends BaseHandler {
     @Override
     public void handle(Update update) {
+        System.out.println("ENTER to PollAnswerHandler");
+
         PollAnswer pollAnswer = update.pollAnswer();
         myGroup = getGroupOrCreate(pollAnswer.voterChat());
         String pollId = pollAnswer.pollId();

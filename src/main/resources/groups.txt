@@ -1,8 +1,0 @@
-[
-  {
-    "chatId": -1002116056010,
-    "title": "BotTest",
-    "userName": "botTest1912",
-    "id": "307165a4-b3d4-43bd-a727-cc76147c183d"
-  }
-]

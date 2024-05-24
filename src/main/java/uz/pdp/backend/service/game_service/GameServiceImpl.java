@@ -2,6 +2,7 @@ package uz.pdp.backend.service.game_service;
 
 import uz.pdp.backend.file_manager.FileManager;
 import uz.pdp.backend.model.game.Game;
+import uz.pdp.bot.enums.GameStatus;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,13 +32,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void add(Game game) {
-        try {
         List<Game> games = fileManager.load(Game.class);
         games.add(game);
         fileManager.write(games, Game.class);
-        } catch (Exception o) {
-            throw o;
-        }
     }
 
     @Override
@@ -56,8 +53,8 @@ public class GameServiceImpl implements GameService {
         System.out.println("ali");
         List<Game> games = fileManager.load(Game.class);
         for (Game game : games) {
-            System.out.println(game.getIsActive() + "  " + game.getGroupId() + "  " + chatId );
-            if (!game.getIsActive() && Objects.equals(game.getGroupId(), chatId)) {
+            System.out.println(game.getStatus() + "  " + game.getGroupId() + "  " + chatId);
+            if (!game.getStatus().equals(GameStatus.ACTIVE) && Objects.equals(game.getGroupId(), chatId)) {
                 return game;
             }
         }
@@ -69,7 +66,7 @@ public class GameServiceImpl implements GameService {
         List<Game> games = fileManager.load(Game.class);
 
         for (Game game : games) {
-            if (game.getIsActive() && game.getGroupId().equals(chatId)) {
+            if (game.getStatus().equals(GameStatus.ACTIVE) && game.getGroupId().equals(chatId)) {
                 return true;
             }
         }
@@ -81,9 +78,9 @@ public class GameServiceImpl implements GameService {
     public Game getWithoutGroupId() {
         List<Game> games = fileManager.load(Game.class);
         for (Game game : games) {
-            if (!game.getIsActive()
-                    && Objects.isNull(game.getCollectionId())
-                    && Objects.isNull(game.getTimeForQuiz())) {
+            if (!game.getStatus().equals(GameStatus.ACTIVE)
+                && Objects.isNull(game.getCollectionId())
+                && Objects.isNull(game.getTimeForQuiz())) {
                 return game;
             }
         }
